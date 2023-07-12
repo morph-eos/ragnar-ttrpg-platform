@@ -12,9 +12,11 @@ function Main() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        height: '90vh',
+                        height: '98vh',
                         background: `url("https://media.tenor.com/hYVsWvkpdrMAAAAC/you-didnt-say-the-magic-word-ah-ah.gif") no-repeat center center fixed`,
-                        backgroundSize: 'cover',
+                        backgroundSize: 'contain',
+                        backgroundPosition: 'center',
+                        backgroundAttachment: 'fixed',
                     }}
                 />
             )}
