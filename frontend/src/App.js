@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
+import consts from './consts';
 
 function App() {
     const [message, setMessage] = useState("");
 
     // Fetching message from backend on mount
     useEffect(() => {
-        fetch("https://heatpeakstudio.onrender.com:4000")
-            .then((res) => console.log(res))
-            .then((data) => setMessage(data.json().message));
+        fetch(consts.BACKEND)
+            .then((res) => res.json())
+            .then((data) => setMessage(data.message));
     }, []);
 
     return (
