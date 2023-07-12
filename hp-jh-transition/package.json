@@ -8,7 +8,9 @@
         "start-server": "cd backend && node app.js",
         "install-client": "cd frontend && npm install",
         "build-client": "cd frontend && npm run build",
-        "start-client": "cd frontend && npm run start"
+        "start-client": "cd frontend && npm run start",
+        "build-all": "concurrently \"cd backend && npm install \" \"cd frontend && npm install && npm run build \"",
+        "start-all": "concurrently \"cd backend && nodemon app.js \" \"cd frontend && npm run start \""
     },
     "keywords": [],
     "author": "",
