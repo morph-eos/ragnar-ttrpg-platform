@@ -1,8 +1,14 @@
+import { Routes, Route } from 'react-router-dom';
+import Main from './Main';
+import UnderConstruction from './UnderConstruction';
 function App() {
 
     return (
         <div className="App">
-            <h1>Website under construction~ Check @heatpeakstudio on Instagram to get more informations!</h1>
+            <Routes>
+                <Route path="/" element={<UnderConstruction/>} />
+                <Route path=":query" element={<Main/>} />
+            </Routes>
         </div>
     );
 }
