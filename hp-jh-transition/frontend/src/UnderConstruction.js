@@ -6,7 +6,7 @@ function UnderConstruction() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                height: '90vh',
+                height: '98vh',
                 backgroundColor: 'black',
             }}
         >
