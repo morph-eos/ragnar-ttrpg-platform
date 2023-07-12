@@ -16,7 +16,7 @@ function UnderConstruction() {
                 style={{ width: '50%', height: 'auto' }}
             />
             <h1 style={{ color: 'white' }}>
-                Website under construction~ Check @heatpeakstudio on Instagram to get more information!
+                Website under construction~ Check @heatpeakstudio on Instagram to get more informations!
             </h1>
         </div>
     );
