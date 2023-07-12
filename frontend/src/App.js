@@ -6,8 +6,8 @@ function App() {
     // Fetching message from backend on mount
     useEffect(() => {
         fetch("https://heatpeakstudio.onrender.com:4000")
-            .then((res) => res.json())
-            .then((data) => setMessage(data.message));
+            .then((res) => console.log(res))
+            .then((data) => setMessage(data.json().message));
     }, []);
 
     return (
