@@ -1,7 +1,8 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\backend"
   ],
-  "SelectedNode": "\\frontend",
+  "SelectedNode": "\\backend\\app.js",
   "PreviewInSolutionExplorer": false
 }
