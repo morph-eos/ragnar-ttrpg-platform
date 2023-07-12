@@ -23,15 +23,14 @@ function Main() {
                 <div
                     style={{
                         backgroundColor: 'orange',
-                        height: 'calc(60px + env(safe-area-inset-top))',
+                        height: '60px',
                         display: 'flex',
                         alignItems: 'center',
                         padding: '0 20px',
-                        borderRadius: '0 0 50% 50% / 10px',
-                        overflow: 'hidden',
+                        borderRadius: '20px', // Imposta il raggio di curvatura degli angoli
                     }}
                 >
-                    <img src="logo.svg" alt="Logo" style={{ height: '40px', marginRight: '20px' }} />
+                    <img src="/logo.png" alt="Logo" style={{ height: '40px', marginRight: '20px' }} />
                     {/* Aggiungi altri elementi della navbar, come pulsanti o menu, a destra del logo */}
                 </div>
             )}
