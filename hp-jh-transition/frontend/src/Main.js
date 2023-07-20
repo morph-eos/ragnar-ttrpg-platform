@@ -28,10 +28,10 @@ function Main() {
                         display: 'flex',
                         alignItems: 'center',
                         padding: '0 20px',
-                        borderRadius: '20px', // Imposta il raggio di curvatura degli angoli
+                        borderRadius: '40px', // Imposta il raggio di curvatura degli angoli
                     }}
                 >
-                    <img src="/logo.png" alt="Logo" style={{ height: '40px', marginRight: '20px' }} />
+                    <img src="/logo.png" alt="Logo"} />
                     {/* Aggiungi altri elementi della navbar, come pulsanti o menu, a destra del logo */}
                 </div>
             )}
