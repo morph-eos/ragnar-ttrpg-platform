@@ -31,7 +31,7 @@ function Main() {
                         borderRadius: '20px', // Imposta il raggio di curvatura degli angoli
                     }}
                 >
-                    <img src="./logo.svg" alt="Logo" style={{ height: '40px', marginRight: '20px' }} />
+                    <img src="/logo.png" alt="Logo" style={{ height: '40px', marginRight: '20px' }} />
                     {/* Aggiungi altri elementi della navbar, come pulsanti o menu, a destra del logo */}
                 </div>
             )}
