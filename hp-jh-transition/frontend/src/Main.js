@@ -31,7 +31,7 @@ function Main() {
                         borderRadius: '40px', // Imposta il raggio di curvatura degli angoli
                     }}
                 >
-                    <img src="/logo.png" alt="Logo"} />
+                    <img src="/logo.png" alt="Logo"/>
                     {/* Aggiungi altri elementi della navbar, come pulsanti o menu, a destra del logo */}
                 </div>
             )}
