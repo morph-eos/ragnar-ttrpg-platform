@@ -1,13 +1,13 @@
 import { Routes, Route } from 'react-router-dom';
 import Main from './Main';
-import UnderConstruction from './UnderConstruction';
+import Router from './Router';
 function App() {
 
     return (
         <div className="App">
             <Routes>
-                <Route path="/" element={<UnderConstruction/>} />
-                <Route path=":query" element={<Main/>} />
+                <Route path="/" element={<Main/>} />
+                <Route path=":query" element={<Router/>} />
             </Routes>
         </div>
     );
