@@ -20,7 +20,7 @@ function Main() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                height: 'calc(~"98vh - 60px")',
+                height: '60vh',
                 backgroundColor: 'black',
             }}
         >
