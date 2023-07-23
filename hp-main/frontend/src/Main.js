@@ -1,5 +1,6 @@
 function Main() {
     return (
+    <>
         <div
             style={{
                 backgroundColor: 'orange',
@@ -32,6 +33,7 @@ function Main() {
                 Website under construction~ Check @heatpeakstudio on Instagram to get more informations!
             </h1>
         </div>
+    </>
     );
 }
 
