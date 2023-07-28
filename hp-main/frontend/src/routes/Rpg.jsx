@@ -1,4 +1,5 @@
-import { Routes, Route, Link, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import Sheets from './rpg/Sheets';
 import Classes from './rpg/Classes';
 import Items from './rpg/Items';
@@ -7,6 +8,31 @@ import World from './rpg/World';
 
 export default function Rpg() {
   const { button } = useParams();
+  
+  const [component, setComponent] = useState();
+
+  useEffect(() => {
+    switch (button) {
+      case 'sheets':
+        setComponent(<Sheets />);
+        break;
+      case 'classes':
+        setComponent(<Classes />);
+        break;
+      case 'items':
+        setComponent(<Items />);
+        break;
+      case 'races':
+        setComponent(<Races />);
+        break;
+      case 'world':
+        setComponent(<World />);
+        break;
+      default:
+        setComponent(<></>);
+        break;
+    }
+  }, [button]);
   
   return (
       <>
@@ -46,14 +72,7 @@ export default function Rpg() {
           </ul>
         </nav>
 
-        {/* Route components */}
-        <Routes>
-          <Route path="/sheets" element={<Sheets />} />
-          <Route path="/classes" element={<Classes />} />
-          <Route path="/items" element={<Items/>}/>
-          <Route path="/races" element={<Races />} />
-          <Route path="/world" element={<World />} />
-        </Routes>
+        {component}
       </>
   );
 }
