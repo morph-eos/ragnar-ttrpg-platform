@@ -1,0 +1,48 @@
+#navbar {
+  background-color: orange;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  border-radius: 40px; /* Imposta il raggio di curvatura degli angoli */
+}
+
+/* Stile per il logo nella navbar */
+#navbar img:first-child {
+  height: 60px;
+  margin-right: 20px;
+  margin-left: -19px;
+}
+
+/*---
+spazio Tailwind
+---*/
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definisci la tua palette di colori personalizzata */
+@layer utilities {
+  .bg-orange {
+    background-color: orange;
+  }
+  .bg-sunset {
+    background-color: #ff6f4a; /* Arancio tramonto */
+  }
+}
+
+/* Stile dei pulsanti con sfondo della palette di colori tramonto */
+.btn-bullet {
+  @apply px-4 py-2 rounded-full font-semibold text-white;
+}
+
+/* Stile del pulsante con sfondo arancio */
+.btn-bullet-orange {
+  @apply bg-orange;
+}
+
+/* Stile del pulsante con sfondo rosso */
+.btn-bullet-sunset {
+  @apply bg-sunset;
+}
