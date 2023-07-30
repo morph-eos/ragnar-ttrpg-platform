@@ -19,9 +19,6 @@ export default function Rpg() {
       case 'classes':
         setComponent(<Classes />);
         break;
-      case 'items':
-        setComponent(<Items />);
-        break;
       case 'races':
         setComponent(<Races />);
         break;
@@ -41,31 +38,25 @@ export default function Rpg() {
           <ul className='flex flex-wrap space-x-4 justify-center'>
             <li className='flex-shrink-0'>
               <Link
-                className={`btn-bullet btn-bullet-${button === 'sheets' ? 'sunset' : 'orange'}`}
+                className={`btn-bullet${button === 'sheets' ? '-active' : ''} btn-bullet-orange`}
                 to="/rpg/sheets"
               >Schede</Link>
             </li>
             <li className='flex-shrink-0'>
               <Link
-                className={`btn-bullet btn-bullet-${button === 'classes' ? 'sunset' : 'orange'}`}
+                className={`btn-bullet${button === 'classes' ? '-active' : ''} btn-bullet-orange`}
                 to="/rpg/classes"
               >Classi</Link>
             </li>
             <li className='flex-shrink-0'>
               <Link
-                className={`btn-bullet btn-bullet-${button === 'items' ? 'sunset' : 'orange'}`}
-                to="/rpg/items"
-              >Oggetti</Link>
-            </li>
-            <li className='flex-shrink-0'>
-              <Link
-                className={`btn-bullet btn-bullet-${button === 'races' ? 'sunset' : 'orange'}`}
+                className={`btn-bullet${button === 'races' ? '-active' : ''} btn-bullet-orange`}
                 to="/rpg/races"
               >Razze</Link>
             </li>
             <li className='flex-shrink-0'>
               <Link
-                className={`btn-bullet btn-bullet-${button === 'world' ? 'sunset' : 'orange'}`}
+                className={`btn-bullet${button === 'world' ? '-active' : ''} btn-bullet-orange`}
                 to="/rpg/world"
               >Mondo</Link>
             </li>

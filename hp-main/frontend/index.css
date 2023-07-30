@@ -27,22 +27,16 @@ spazio Tailwind
   .bg-orange {
     background-color: orange;
   }
-  .bg-sunset {
-    background-color: #ff6f4a; /* Arancio tramonto */
-  }
 }
 
-/* Stile dei pulsanti con sfondo della palette di colori tramonto */
 .btn-bullet {
   @apply px-4 py-2 rounded-full font-semibold text-white;
 }
 
-/* Stile del pulsante con sfondo arancio */
-.btn-bullet-orange {
-  @apply bg-orange;
+.btn-bullet-active {
+  @apply px-4 py-2 rounded-full font-semibold text-black border-2 border-black;
 }
 
-/* Stile del pulsante con sfondo rosso */
-.btn-bullet-sunset {
-  @apply bg-sunset;
+.btn-bullet-orange {
+  @apply bg-orange;
 }
