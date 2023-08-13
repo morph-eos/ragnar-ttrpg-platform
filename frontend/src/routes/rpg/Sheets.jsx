@@ -1,36 +1,80 @@
 import React, { useState, useEffect } from 'react';
+import { modifier } from './functions';
 import axios from 'axios';
 
 export default function Sheets() {
-  const [options, setOptions] = useState([]); // Array delle opzioni ottenute dalla richiesta GET
-  const [selectedOption, setSelectedOption] = useState(''); // Opzione selezionata nel dropdown
+  const [options, setOptions] = useState([]);
+  const [selectedOptionId, setSelectedOptionId] = useState();
+  const [selectedCharacter, setSelectedCharacter] = useState();
 
   useEffect(() => {
-    // Effettua la richiesta GET al server per ottenere l'array di stringhe
     axios.get(window.origin + '/api/rpg/charaNames')
       .then(response => {
-        setOptions(response.data); // Imposta l'array di stringhe nelle opzioni
-        setSelectedOption(response.data[0]); // Imposta la prima opzione come opzione preselezionata
+        setOptions(response.data);
+        setSelectedOptionId(response.data[0].id); // Imposta solo l'ID come valore selezionato
       })
       .catch(error => {
         console.error('Errore nella richiesta GET:', error);
       })
   }, []);
 
+  useEffect(() => {
+    // Utilizza selectedOptionId per ottenere il personaggio corretto
+    axios.post(window.origin + '/api/rpg/sheetPrint', { id: selectedOptionId })
+      .then(response => {
+        setSelectedCharacter(response.data);
+      })
+      .catch(error => {
+        console.error('Errore nella richiesta POST:', error);
+      })
+  }, [selectedOptionId]);
+
   const handleSelectChange = (e) => {
-    // Aggiorna l'opzione selezionata nel dropdown
-    setSelectedOption(e.target.value);
+    setSelectedOptionId(e.target.value); // Aggiorna solo l'ID selezionato
   };
 
   return (
     <div className="p-4">
-      <select onChange={handleSelectChange} className="w-full px-4 py-2 border rounded-full">
-        {options.map((option, index) => (
-          <option key={index} value={option}>
-            {option}
+      <select onChange={handleSelectChange} value={selectedOptionId} className="w-full px-4 py-2 border rounded-full">
+        {options.map((option) => (
+          <option key={option.id} value={option.id}>
+            {option.name + ' (' + option.id + ')'}
           </option>
         ))}
       </select>
+      {selectedCharacter && (
+        <div>
+          {
+            selectedCharacter.description.references && (
+              <div className="rounded-xl flex flex-wrap">
+                {selectedCharacter.description.references.map((image, index) => (
+                  <div
+                    key={'reference' + index}
+                    className="h-[31.8vw] w-[31.8vw] flex items-center justify-center mb-2 mr-2"
+                  >
+                    <img
+                      src={`${window.origin}/api/rpg/charaImg/${selectedCharacter._id}_${image}`}
+                      alt={`Reference ${index + 1}`}
+                      className="h-full w-full object-contain"
+                    />
+                  </div>
+                ))}
+              </div>
+            )
+          }
+          <p>{selectedCharacter.name}</p>
+          <p>{"Razza: " + selectedCharacter.description.race + ", Anni: " + selectedCharacter.description.age + ", Altezza: " + selectedCharacter.description.height + "m, Peso: " + selectedCharacter.description.weight + "Kg"}</p>
+          <p>{"Occhi: " + selectedCharacter.description.eyes + ", Carnagione: " + selectedCharacter.description.skin + ", Capelli: " + selectedCharacter.description.hairs}</p>
+          <div>
+            <p>Costituzione: {selectedCharacter.statistics.constitution + '(' + modifier(selectedCharacter.statistics.constitution) + ')'}</p>
+            <p>Forza: {selectedCharacter.statistics.strength + '(' + modifier(selectedCharacter.statistics.strength) + ')'}</p>
+            <p>Destrezza: {selectedCharacter.statistics.dexterity + '(' + modifier(selectedCharacter.statistics.dexterity) + ')'}</p>
+            <p>Intelligenza: {selectedCharacter.statistics.intelligence + '(' + modifier(selectedCharacter.statistics.intelligence) + ')'}</p>
+            <p>Saggezza: {selectedCharacter.statistics.wisdom + '(' + modifier(selectedCharacter.statistics.wisdom) + ')'}</p>
+            <p>Carisma: {selectedCharacter.statistics.charisma + '(' + modifier(selectedCharacter.statistics.charisma) + ')'}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
