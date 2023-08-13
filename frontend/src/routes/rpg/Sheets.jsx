@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { modifier } from './functions';
+import { modifier, findAbility } from './functions';
 import axios from 'axios';
 
 export default function Sheets() {
   const [options, setOptions] = useState([]);
   const [selectedOptionId, setSelectedOptionId] = useState();
   const [selectedCharacter, setSelectedCharacter] = useState();
+  const [selectedCharacterClass, setSelectedCharacterClass] = useState();
 
   useEffect(() => {
     axios.get(window.origin + '/api/rpg/charaNames')
@@ -23,6 +24,15 @@ export default function Sheets() {
     axios.post(window.origin + '/api/rpg/sheetPrint', { id: selectedOptionId })
       .then(response => {
         setSelectedCharacter(response.data);
+        if(response.data.classId){
+          axios.post(window.origin + '/api/rpg/classPrint', { classId: response.data.classId })
+          	.then(response => {
+              setSelectedCharacterClass(response.data);
+            })
+            .catch(error => {
+              console.error('Errore nella richiesta POST:', error);
+            })
+        }
       })
       .catch(error => {
         console.error('Errore nella richiesta POST:', error);
@@ -42,7 +52,7 @@ export default function Sheets() {
           </option>
         ))}
       </select>
-      {selectedCharacter && (
+      {(selectedCharacter && selectedCharacterClass) && (
         <div>
           {
             selectedCharacter.description.references && (
@@ -63,7 +73,11 @@ export default function Sheets() {
             )
           }
           <p>{selectedCharacter.name}</p>
-          <p>{"Razza: " + selectedCharacter.description.race + ", Anni: " + selectedCharacter.description.age + ", Altezza: " + selectedCharacter.description.height + "m, Peso: " + selectedCharacter.description.weight + "Kg"}</p>
+          <p>
+            {"Razza: " + selectedCharacter.description.race + ", Classe: " + selectedCharacterClass.name}
+            {selectedCharacter.style && ", Stile di combattimento: " + selectedCharacter.style}
+          </p>
+          <p>{"Anni: " + selectedCharacter.description.age + ", Altezza: " + selectedCharacter.description.height + "m, Peso: " + selectedCharacter.description.weight + "Kg"}</p>
           <p>{"Occhi: " + selectedCharacter.description.eyes + ", Carnagione: " + selectedCharacter.description.skin + ", Capelli: " + selectedCharacter.description.hairs}</p>
           <div>
             <p>Costituzione: {selectedCharacter.statistics.constitution + '(' + modifier(selectedCharacter.statistics.constitution) + ')'}</p>
@@ -73,6 +87,23 @@ export default function Sheets() {
             <p>Saggezza: {selectedCharacter.statistics.wisdom + '(' + modifier(selectedCharacter.statistics.wisdom) + ')'}</p>
             <p>Carisma: {selectedCharacter.statistics.charisma + '(' + modifier(selectedCharacter.statistics.charisma) + ')'}</p>
           </div>
+          {selectedCharacter.abilities && (
+            <div>
+              <p>Lista abilità:</p>
+              <div>
+                {selectedCharacter.abilities.map((ability, index) => {
+                  const matchingAbility = findAbility(selectedCharacterClass.paths, ability.name);
+                  return (
+                    <div key={index}>
+                      <p>{ability.name}</p>
+                      <p>{"Numero di utilizzi: " + ability.uses}</p>
+                      <p>Descrizione: {matchingAbility ? matchingAbility.description : "Nessuna descrizione disponibile"}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
