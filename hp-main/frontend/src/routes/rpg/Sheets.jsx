@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { modifier, findAbility } from './functions';
+import { findAbility } from './functions';
 import axios from 'axios';
 
 export default function Sheets() {
@@ -74,18 +74,18 @@ export default function Sheets() {
           }
           <p>{selectedCharacter.name}</p>
           <p>
-            {"Razza: " + selectedCharacter.description.race + ", Classe: " + selectedCharacterClass.name}
+            {"Razza: " + selectedCharacter.race + ", Classe: " + selectedCharacterClass.name}
             {selectedCharacter.style && ", Stile di combattimento: " + selectedCharacter.style}
           </p>
           <p>{"Anni: " + selectedCharacter.description.age + ", Altezza: " + selectedCharacter.description.height + "m, Peso: " + selectedCharacter.description.weight + "Kg"}</p>
           <p>{"Occhi: " + selectedCharacter.description.eyes + ", Carnagione: " + selectedCharacter.description.skin + ", Capelli: " + selectedCharacter.description.hairs}</p>
           <div>
-            <p>Costituzione: {selectedCharacter.statistics.constitution + '(' + modifier(selectedCharacter.statistics.constitution) + ')'}</p>
-            <p>Forza: {selectedCharacter.statistics.strength + '(' + modifier(selectedCharacter.statistics.strength) + ')'}</p>
-            <p>Destrezza: {selectedCharacter.statistics.dexterity + '(' + modifier(selectedCharacter.statistics.dexterity) + ')'}</p>
-            <p>Intelligenza: {selectedCharacter.statistics.intelligence + '(' + modifier(selectedCharacter.statistics.intelligence) + ')'}</p>
-            <p>Saggezza: {selectedCharacter.statistics.wisdom + '(' + modifier(selectedCharacter.statistics.wisdom) + ')'}</p>
-            <p>Carisma: {selectedCharacter.statistics.charisma + '(' + modifier(selectedCharacter.statistics.charisma) + ')'}</p>
+            <p>Costituzione: {selectedCharacter.statistics.constitution}</p>
+            <p>Forza: {selectedCharacter.statistics.strength}</p>
+            <p>Destrezza: {selectedCharacter.statistics.dexterity}</p>
+            <p>Intelligenza: {selectedCharacter.statistics.intelligence}</p>
+            <p>Saggezza: {selectedCharacter.statistics.wisdom}</p>
+            <p>Carisma: {selectedCharacter.statistics.charisma}</p>
           </div>
           {selectedCharacter.abilities && (
             <div>
@@ -95,7 +95,7 @@ export default function Sheets() {
                   const matchingAbility = findAbility(selectedCharacterClass.paths, ability.name);
                   return (
                     <div key={index}>
-                      <p>{ability.name}</p>
+                      <p>{ability.id}</p>
                       <p>{"Numero di utilizzi: " + ability.uses}</p>
                       <p>Descrizione: {matchingAbility ? matchingAbility.description : "Nessuna descrizione disponibile"}</p>
                     </div>
