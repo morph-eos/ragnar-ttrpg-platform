@@ -11,7 +11,7 @@ export default function Main() {
       }}
     >
       <img
-        src="https://media2.giphy.com/media/hV1dkT2u1gqTUpKdKy/giphy.gif?cid=6c09b952nzs1x9zhws2aj1t84dp2j7rnxanrer4f3jxxd6p5&ep=v1_internal_gif_by_id&rid=giphy.gif&ct=g"
+        src="/construction-under-kipp.gif"
         alt="Under Construction"
         style={{ width: 'auto', height: 'auto' }}
       />
