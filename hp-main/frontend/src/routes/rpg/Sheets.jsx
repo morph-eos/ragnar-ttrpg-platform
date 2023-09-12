@@ -48,7 +48,7 @@ export default function Sheets() {
                 {selectedCharacter.description.references.map((image, index) => (
                   <div
                     key={'reference' + index}
-                    className="h-[31.8vw] w-[31.8vw] flex items-center justify-center mb-2 mr-2"
+                    className="max-h-[31.8vw] max-w-[31.8vw] flex items-center justify-center mt-2 mb-2 mr-2"
                   >
                     <img
                       src={`${window.origin}/api/rpg/charaImg/${selectedCharacter._id}_${image}`}
@@ -64,8 +64,12 @@ export default function Sheets() {
           <p>
             {"Razza: " + selectedCharacter.race.name + ", Classe: " + selectedCharacter.class.name}
             {selectedCharacter.style && ", Stile di combattimento: " + selectedCharacter.style}
+            {selectedCharacter.region && ", Regione di nascita: " + selectedCharacter.region.name}
           </p>
-          <p>{"Anni: " + selectedCharacter.description.age + ", Altezza: " + selectedCharacter.description.height + "m, Peso: " + selectedCharacter.description.weight + "Kg"}</p>
+          <p>
+            {selectedCharacter.description.gender && "Genere: " + selectedCharacter.description.gender + ", "}
+            {"Anni: " + selectedCharacter.description.age + ", Altezza: " + selectedCharacter.description.height + "m, Peso: " + selectedCharacter.description.weight + "Kg"}
+          </p>
           <p>{"Occhi: " + selectedCharacter.description.eyes + ", Carnagione: " + selectedCharacter.description.skin + ", Capelli: " + selectedCharacter.description.hairs}</p>
           <div>
             <p>Costituzione: {selectedCharacter.statistics.constitution}</p>
@@ -75,16 +79,32 @@ export default function Sheets() {
             <p>Saggezza: {selectedCharacter.statistics.wisdom}</p>
             <p>Carisma: {selectedCharacter.statistics.charisma}</p>
           </div>
-          {selectedCharacter.abilities && (
+          {selectedCharacter.abilities.items[0] && (
             <div>
               <p>Lista abilità:</p>
               <div>
-                {selectedCharacter.abilities.ids.map((ability, index) => {
+                {selectedCharacter.abilities.items.map((ability, index) => {
                   return (
-                    <div key={index}>
+                    <div key={"Ability "+index}>
                       <p>{ability.name}</p>
                       <p>{"Numero di utilizzi: " + selectedCharacter.abilities.uses[index]}</p>
                       <p>Descrizione: {ability.description}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+          {selectedCharacter.spells.items[0] && (
+            <div>
+              <p>Lista incantensimi:</p>
+              <div>
+                {selectedCharacter.spells.items.map((spell, index) => {
+                  return (
+                    <div key={"Spell " + index}>
+                      <p>{spell.name}</p>
+                      <p>{"Numero di utilizzi: " + selectedCharacter.spells.uses[index]}</p>
+                      <p>Descrizione: {spell.description}</p>
                     </div>
                   );
                 })}
