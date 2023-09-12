@@ -6,7 +6,6 @@ export default function Sheets() {
   const [options, setOptions] = useState([]);
   const [selectedOptionId, setSelectedOptionId] = useState();
   const [selectedCharacter, setSelectedCharacter] = useState();
-  const [selectedCharacterClass, setSelectedCharacterClass] = useState();
 
   useEffect(() => {
     axios.get(window.origin + '/api/rpg/charaNames')
@@ -22,18 +21,7 @@ export default function Sheets() {
   useEffect(() => {
     // Utilizza selectedOptionId per ottenere il personaggio corretto
     axios.post(window.origin + '/api/rpg/sheetPrint', { id: selectedOptionId })
-      .then(response => {
-        setSelectedCharacter(response.data);
-        if(response.data.classId){
-          axios.post(window.origin + '/api/rpg/classPrint', { classId: response.data.classId })
-          	.then(response => {
-              setSelectedCharacterClass(response.data);
-            })
-            .catch(error => {
-              console.error('Errore nella richiesta POST:', error);
-            })
-        }
-      })
+      .then(response => {setSelectedCharacter(response.data);})
       .catch(error => {
         console.error('Errore nella richiesta POST:', error);
       })
@@ -52,7 +40,7 @@ export default function Sheets() {
           </option>
         ))}
       </select>
-      {(selectedCharacter && selectedCharacterClass) && (
+      {selectedCharacter && (
         <div>
           {
             selectedCharacter.description.references && (
@@ -74,7 +62,7 @@ export default function Sheets() {
           }
           <p>{selectedCharacter.name}</p>
           <p>
-            {"Razza: " + selectedCharacter.race + ", Classe: " + selectedCharacterClass.name}
+            {"Razza: " + selectedCharacter.race.name + ", Classe: " + selectedCharacter.class.name}
             {selectedCharacter.style && ", Stile di combattimento: " + selectedCharacter.style}
           </p>
           <p>{"Anni: " + selectedCharacter.description.age + ", Altezza: " + selectedCharacter.description.height + "m, Peso: " + selectedCharacter.description.weight + "Kg"}</p>
@@ -91,13 +79,12 @@ export default function Sheets() {
             <div>
               <p>Lista abilità:</p>
               <div>
-                {selectedCharacter.abilities.map((ability, index) => {
-                  const matchingAbility = findAbility(selectedCharacterClass.paths, ability.name);
+                {selectedCharacter.abilities.ids.map((ability, index) => {
                   return (
                     <div key={index}>
-                      <p>{ability.id}</p>
-                      <p>{"Numero di utilizzi: " + ability.uses}</p>
-                      <p>Descrizione: {matchingAbility ? matchingAbility.description : "Nessuna descrizione disponibile"}</p>
+                      <p>{ability.name}</p>
+                      <p>{"Numero di utilizzi: " + selectedCharacter.abilities.uses[index]}</p>
+                      <p>Descrizione: {ability.description}</p>
                     </div>
                   );
                 })}
