@@ -72,12 +72,12 @@ export default function Sheets() {
           </p>
           <p>{"Occhi: " + selectedCharacter.description.eyes + ", Carnagione: " + selectedCharacter.description.skin + ", Capelli: " + selectedCharacter.description.hairs}</p>
           <div>
-            <p>Costituzione: {selectedCharacter.statistics.constitution}</p>
-            <p>Forza: {selectedCharacter.statistics.strength}</p>
-            <p>Destrezza: {selectedCharacter.statistics.dexterity}</p>
-            <p>Intelligenza: {selectedCharacter.statistics.intelligence}</p>
-            <p>Saggezza: {selectedCharacter.statistics.wisdom}</p>
-            <p>Carisma: {selectedCharacter.statistics.charisma}</p>
+            <p>Costituzione: {selectedCharacter.statistics.constitution + selectedCharacter.race.statistics.constitution + selectedCharacter.class.statistics.constitution}</p>
+            <p>Forza: {selectedCharacter.statistics.strength + selectedCharacter.race.statistics.strenght + selectedCharacter.class.statistics.strenght}</p>
+            <p>Destrezza: {selectedCharacter.statistics.dexterity + selectedCharacter.race.statistics.dexterity + selectedCharacter.class.statistics.dexterity}</p>
+            <p>Intelligenza: {selectedCharacter.statistics.intelligence + selectedCharacter.race.statistics.intelligence + selectedCharacter.class.statistics.intelligence}</p>
+            <p>Saggezza: {selectedCharacter.statistics.wisdom + selectedCharacter.race.statistics.wisdom + selectedCharacter.class.statistics.wisdom}</p>
+            <p>Carisma: {selectedCharacter.statistics.charisma + selectedCharacter.race.statistics.charisma + selectedCharacter.class.statistics.charisma}</p>
           </div>
           {selectedCharacter.abilities.items[0] && (
             <div>
