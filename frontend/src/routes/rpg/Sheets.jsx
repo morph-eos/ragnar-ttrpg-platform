@@ -41,78 +41,93 @@ export default function Sheets() {
         ))}
       </select>
       {selectedCharacter && (
-        <div>
+  <div className="bg-white rounded-lg shadow-lg p-4">
           {
-            selectedCharacter.description.references && (
-              <div className="rounded-xl flex flex-wrap">
-                {selectedCharacter.description.references.map((image, index) => (
-                  <div
-                    key={'reference' + index}
-                    className="max-h-[31.8vw] max-w-[31.8vw] flex items-center justify-center mt-2 mb-2 mr-2"
-                  >
-                    <img
-                      src={`${window.origin}/api/rpg/charaImg/${selectedCharacter._id}_${image}`}
-                      alt={`Reference ${index + 1}`}
-                      className="h-full w-full object-contain"
-                    />
-                  </div>
-                ))}
-              </div>
-            )
-          }
-          <p>{selectedCharacter.name}</p>
-          <p>
-            {"Razza: " + selectedCharacter.race.name + ", Classe: " + selectedCharacter.class.name}
-            {selectedCharacter.style && ", Stile di combattimento: " + selectedCharacter.style}
-            {selectedCharacter.region && ", Regione di nascita: " + selectedCharacter.region.name}
-          </p>
-          <p>
-            {selectedCharacter.description.gender && "Genere: " + selectedCharacter.description.gender + ", "}
-            {"Anni: " + selectedCharacter.description.age + ", Altezza: " + selectedCharacter.description.height + "m, Peso: " + selectedCharacter.description.weight + "Kg"}
-          </p>
-          <p>{"Occhi: " + selectedCharacter.description.eyes + ", Carnagione: " + selectedCharacter.description.skin + ", Capelli: " + selectedCharacter.description.hairs}</p>
-          <div>
-            <p>Costituzione: {selectedCharacter.statistics.constitution + selectedCharacter.race.statistics.constitution + selectedCharacter.class.statistics.constitution}</p>
-            <p>Forza: {selectedCharacter.statistics.strength + selectedCharacter.race.statistics.strenght + selectedCharacter.class.statistics.strenght}</p>
-            <p>Destrezza: {selectedCharacter.statistics.dexterity + selectedCharacter.race.statistics.dexterity + selectedCharacter.class.statistics.dexterity}</p>
-            <p>Intelligenza: {selectedCharacter.statistics.intelligence + selectedCharacter.race.statistics.intelligence + selectedCharacter.class.statistics.intelligence}</p>
-            <p>Saggezza: {selectedCharacter.statistics.wisdom + selectedCharacter.race.statistics.wisdom + selectedCharacter.class.statistics.wisdom}</p>
-            <p>Carisma: {selectedCharacter.statistics.charisma + selectedCharacter.race.statistics.charisma + selectedCharacter.class.statistics.charisma}</p>
-          </div>
-          {selectedCharacter.abilities.items[0] && (
-            <div>
-              <p>Lista abilità:</p>
-              <div>
-                {selectedCharacter.abilities.items.map((ability, index) => {
-                  return (
-                    <div key={"Ability "+index}>
-                      <p>{ability.name}</p>
-                      <p>{"Numero di utilizzi: " + selectedCharacter.abilities.uses[index]}</p>
-                      <p>Descrizione: {ability.description}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-          {selectedCharacter.spells.items[0] && (
-            <div>
-              <p>Lista incantensimi:</p>
-              <div>
-                {selectedCharacter.spells.items.map((spell, index) => {
-                  return (
-                    <div key={"Spell " + index}>
-                      <p>{spell.name}</p>
-                      <p>{"Numero di utilizzi: " + selectedCharacter.spells.uses[index]}</p>
-                      <p>Descrizione: {spell.description}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+  selectedCharacter.description.references && (
+    <div className="rounded-xl overflow-x-auto whitespace-nowrap flex flex-row items-center">
+      {selectedCharacter.description.references.map((image, index) => (
+        <div
+          key={'reference_' + index}
+          className="inline-block max-w-[31.4vw] max-h-[31.4vw] flex-shrink-0 justify-center mt-2 mb-2 ml-1 mr-1"
+        >
+          <img
+            src={`${window.origin}/api/rpg/charaImg/${selectedCharacter._id}_${image}`}
+            alt={`Reference ${index + 1}`}
+            className="max-w-full max-h-full"
+          />
         </div>
-      )}
+      ))}
+    </div>
+  )
+}
+
+
+    <h1 className="text-3xl font-semibold mb-3">{selectedCharacter.name}</h1>
+    <p className="text-gray-600">
+      <span className="font-bold text-orange-500">Razza:</span> {selectedCharacter.race.name}, 
+      <span className="font-bold text-orange-500"> Classe:</span> {selectedCharacter.class.name}
+      {selectedCharacter.style && <>, <span className="font-bold text-orange-500"> Stile di combattimento:</span> {selectedCharacter.style}</>}
+      {selectedCharacter.region && <>, <span className="font-bold text-orange-500"> Regione di nascita:</span> {selectedCharacter.region.name}</>}
+    </p>
+    <p className="text-gray-600">
+      {selectedCharacter.description.gender && 
+        <><span className="font-bold text-orange-500">Genere:</span> {selectedCharacter.description.gender},</>
+      }
+      <span className="font-bold text-orange-500"> Anni:</span> {selectedCharacter.description.age}, 
+      <span className="font-bold text-orange-500"> Altezza:</span> {selectedCharacter.description.height}m, 
+      <span className="font-bold text-orange-500"> Peso:</span> {selectedCharacter.description.weight}Kg
+    </p>
+    <p className="text-gray-600">
+      <span className="font-bold text-orange-500">Occhi:</span> {selectedCharacter.description.eyes}, 
+      <span className="font-bold text-orange-500"> Carnagione:</span> {selectedCharacter.description.skin}, 
+      <span className="font-bold text-orange-500"> Capelli:</span> {selectedCharacter.description.hairs}
+    </p>
+    <div className="mt-4">
+      <h2 className="text-xl font-semibold mb-2">Statistiche</h2>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <p><span className="font-bold text-orange-500">Costituzione:</span> {selectedCharacter.statistics.constitution + selectedCharacter.race.statistics.constitution + selectedCharacter.class.statistics.constitution}</p>
+          <p><span className="font-bold text-orange-500">Forza:</span> {selectedCharacter.statistics.strength + selectedCharacter.race.statistics.strength + selectedCharacter.class.statistics.strength}</p>
+          <p><span className="font-bold text-orange-500">Destrezza:</span> {selectedCharacter.statistics.dexterity + selectedCharacter.race.statistics.dexterity + selectedCharacter.class.statistics.dexterity}</p>
+        </div>
+        <div>
+          <p><span className="font-bold text-orange-500">Intelligenza:</span> {selectedCharacter.statistics.intelligence + selectedCharacter.race.statistics.intelligence + selectedCharacter.class.statistics.intelligence}</p>
+          <p><span className="font-bold text-orange-500">Saggezza:</span> {selectedCharacter.statistics.wisdom + selectedCharacter.race.statistics.wisdom + selectedCharacter.class.statistics.wisdom}</p>
+          <p><span className="font-bold text-orange-500">Carisma:</span> {selectedCharacter.statistics.charisma + selectedCharacter.race.statistics.charisma + selectedCharacter.class.statistics.charisma}</p>
+        </div>
+      </div>
+    </div>
+    {selectedCharacter.abilities.items[0] && (
+      <div className="mt-4">
+        <h2 className="text-xl font-semibold">Lista abilità</h2>
+        <div>
+          {selectedCharacter.abilities.items.map((ability, index) => (
+            <div key={`Ability ${index}`} className="mt-2">
+              <p className="font-bold text-orange-500">{ability.name}</p>
+              <p><span className="font-bold">Numero di utilizzi:</span> {selectedCharacter.abilities.uses[index]}</p>
+              <p className="text-gray-600"><span className="font-bold">Descrizione:</span> {ability.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+    {selectedCharacter.spells.items[0] && (
+      <div className="mt-4">
+        <h2 className="text-xl font-semibold">Lista incantesimi</h2>
+        <div>
+          {selectedCharacter.spells.items.map((spell, index) => (
+            <div key={`Spell ${index}`} className="mt-2">
+              <p className="font-bold text-orange-500">{spell.name}</p>
+              <p><span className="font-bold">Numero di utilizzi:</span> {selectedCharacter.spells.uses[index]}</p>
+              <p className="text-gray-600"><span className="font-bold">Descrizione:</span> {spell.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+)}
+
     </div>
   );
 };
