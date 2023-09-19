@@ -9,7 +9,7 @@ export default function Sheets() {
 
   useEffect(() => {
     axios
-      .get(window.origin + "/api/rpg/charaNames")
+      .get(window.origin + "/api/rpg/list?type=characters")
       .then((response) => {
         setOptions(response.data);
         setSelectedOptionId(response.data[0].id); // Imposta solo l'ID come valore selezionato
@@ -22,7 +22,7 @@ export default function Sheets() {
   useEffect(() => {
     // Utilizza selectedOptionId per ottenere il personaggio corretto
     axios
-      .post(window.origin + "/api/rpg/sheetPrint", { id: selectedOptionId })
+      .post(window.origin + "/api/rpg/print", { id: selectedOptionId, type: 'character' })
       .then((response) => {
         setSelectedCharacter(response.data);
       })
