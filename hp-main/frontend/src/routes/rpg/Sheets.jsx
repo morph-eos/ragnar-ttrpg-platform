@@ -58,7 +58,7 @@ export default function Sheets() {
                   className="inline-block max-w-[31.4vw] max-h-[31.4vw] flex-shrink-0 justify-center mt-2 mb-2 ml-1 mr-1"
                 >
                   <img
-                    src={`${window.origin}/api/rpg/references/characters_${selectedCharacter._id}_${image}`}
+                    src={`${window.origin}/api/rpg/references/characters_${selectedOptionId}_${image}`}
                     alt={`Reference ${index + 1}`}
                     className="max-w-full max-h-full"
                   />
