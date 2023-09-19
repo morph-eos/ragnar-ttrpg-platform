@@ -2,8 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Sheets from './rpg/Sheets';
 import Classes from './rpg/Classes';
-import Races from './rpg/Races';
-import World from './rpg/World';
+import Showcase from './rpg/Showcase';
 import Private from './rpg/Private';
 
 export default function Rpg() {
@@ -20,10 +19,13 @@ export default function Rpg() {
         setComponent(<Classes />);
         break;
       case 'races':
-        setComponent(<Races />);
+        setComponent(<Showcase type="races"/>);
         break;
-      case 'world':
-        setComponent(<World />);
+      case 'regions':
+        setComponent(<Showcase type="regions" />);
+        break;
+      case 'private':
+        setComponent(<Private />);
         break;
       default:
         setComponent(<></>);
@@ -56,9 +58,9 @@ export default function Rpg() {
             </li>
             <li className='flex-shrink-0'>
               <Link
-                className={`btn-bullet${button === 'world' ? '-active' : ''} btn-bullet-orange`}
-                to="/rpg/world"
-              >Mondo</Link>
+                className={`btn-bullet${button === 'regions' ? '-active' : ''} btn-bullet-orange`}
+                to="/rpg/regions"
+              >Regioni</Link>
             </li>
             <li className='flex-shrink-0'>
               <Link

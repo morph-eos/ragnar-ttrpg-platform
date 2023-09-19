@@ -22,7 +22,7 @@ export default function Sheets() {
   useEffect(() => {
     // Utilizza selectedOptionId per ottenere il personaggio corretto
     axios
-      .post(window.origin + "/api/rpg/print", { id: selectedOptionId, type: 'character' })
+      .post(window.origin + "/api/rpg/print", { id: selectedOptionId, type: 'characters' })
       .then((response) => {
         setSelectedCharacter(response.data);
       })
@@ -58,7 +58,7 @@ export default function Sheets() {
                   className="inline-block max-w-[31.4vw] max-h-[31.4vw] flex-shrink-0 justify-center mt-2 mb-2 ml-1 mr-1"
                 >
                   <img
-                    src={`${window.origin}/api/rpg/charaImg/${selectedCharacter._id}_${image}`}
+                    src={`${window.origin}/api/rpg/references/characters_${selectedCharacter._id}_${image}`}
                     alt={`Reference ${index + 1}`}
                     className="max-w-full max-h-full"
                   />

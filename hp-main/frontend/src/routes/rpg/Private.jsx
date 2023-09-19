@@ -1,3 +1,3 @@
-export default function Items() {
+export default function Private() {
   
 };
