@@ -76,7 +76,7 @@ export default function Showcase({ type }) {
                 {selectedOption.name}
               </h1>
               <p className="text-gray-600">{selectedOption.description}</p>
-              {type === "regions" && (
+              {type === "states" && (
                 <div className="mt-4">
                   {selectedOption.races && selectedOption.races.lenght > 0 && (
                     <>

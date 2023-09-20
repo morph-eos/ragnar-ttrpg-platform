@@ -21,8 +21,8 @@ export default function Rpg() {
       case 'races':
         setComponent(<Showcase type="races"/>);
         break;
-      case 'regions':
-        setComponent(<Showcase type="regions" />);
+      case 'states':
+        setComponent(<Showcase type="states" />);
         break;
       case 'private':
         setComponent(<Private />);
@@ -58,9 +58,9 @@ export default function Rpg() {
             </li>
             <li className='flex-shrink-0'>
               <Link
-                className={`btn-bullet${button === 'regions' ? '-active' : ''} btn-bullet-orange`}
-                to="/rpg/regions"
-              >Regioni</Link>
+                className={`btn-bullet${button === 'states' ? '-active' : ''} btn-bullet-orange`}
+                to="/rpg/states"
+              >Stati</Link>
             </li>
             <li className='flex-shrink-0'>
               <Link
