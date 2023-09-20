@@ -75,6 +75,9 @@ export default function Showcase({ type }) {
               <h1 className="text-3xl font-semibold mb-4">
                 {selectedOption.name}
               </h1>
+              <h2 className="text-xl font-semibold mb-2">
+                Descrizione:
+              </h2>
               <p className="text-gray-600">{selectedOption.description}</p>
               {type === "states" && (
                 <div className="mt-4">
@@ -155,7 +158,7 @@ export default function Showcase({ type }) {
                   {selectedOption.abilities.items[0] && (
                     <div className="mt-4">
                       <h2 className="text-xl font-semibold">
-                        Lista abilità di razza
+                        Lista abilità di razza (da rivedere)
                       </h2>
                       <div>
                         {selectedOption.abilities.items.map(
