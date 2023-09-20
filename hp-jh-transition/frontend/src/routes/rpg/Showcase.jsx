@@ -107,7 +107,7 @@ export default function Showcase({ type }) {
                 <>
                   <div className="mt-4">
                     <h2 className="text-xl font-semibold mb-2">
-                      Statistiche iniziali
+                      Statistiche di partenza (da rifare)
                     </h2>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
