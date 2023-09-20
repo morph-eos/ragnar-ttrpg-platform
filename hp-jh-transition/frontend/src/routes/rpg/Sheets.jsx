@@ -84,12 +84,12 @@ export default function Sheets() {
                 {selectedCharacter.style}
               </>
             )}
-            {selectedCharacter.region && (
+            {selectedCharacter.from && (
               <>
                 ,{" "}
                 <span className="font-bold text-orange-500">
                   {" "}
-                  Regione di nascita:
+                  Stato di provenienza:
                 </span>{" "}
                 {selectedCharacter.region.name}
               </>
