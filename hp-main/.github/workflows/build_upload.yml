@@ -31,6 +31,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        
+      - name: debug
+        run: |
+          ls -al
+          ls -al ./frontend
   
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
