@@ -19,7 +19,7 @@ jobs:
         node-version: 14
 
     - name: Install dependencies
-      run: npm run install-frontend && npm run install-server
+      run: npm run install-frontend
 
     - name: Build React app
       run: npm run build-frontend
@@ -43,8 +43,7 @@ jobs:
         file: ./Dockerfile
         platforms: linux/amd64,linux/arm64
         push: true
-        tags: |
-          ${{ secrets.DOCKER_USERNAME }}/hps-server:latest
+        tags: ${{ secrets.DOCKER_USERNAME }}/hps-server:latest
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
