@@ -49,5 +49,5 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: |
+          tags:
             $DOCKER_USERNAME/hps-server:latest
