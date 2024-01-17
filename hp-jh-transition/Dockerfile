@@ -1,14 +1,12 @@
-FROM node:10-alpine
+FROM node:16-alpine
 
-WORKDIR /home/node/app
+RUN mkdir /app && chown node:node /app
+WORKDIR /app
 
 USER node
-
-COPY ./ ./
+COPY --chown=node:node . .
 
 RUN npm run install-server
-
-COPY --chown=node:node . .
 
 EXPOSE 8080
 
