@@ -16,13 +16,21 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: 16
+        node-version: 14
 
     - name: Install dependencies
-      run: npm run install-frontend
-
+      run: npm install
+          
     - name: Build React app
-      run: npm run build-frontend
+      run: 
+        npm run build
+        echo "Frontend build completed"
+        
+    - name: Save frontend artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: frontend
+        path: frontend/dist
 
   build_image_upload:
     runs-on: ubuntu-latest
@@ -31,27 +39,25 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        
-      - name: debug
-        run: |
-          ls -al
-          ls -al ./frontend
-  
+
+      - name: Download frontend artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: frontend
+          path: frontend/dist
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
       - name: Docker Login
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run:
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           
       - name: Build and Upload the Docker image
         uses: docker/build-push-action@v2
         with:
-          context: .
-          file: ./Dockerfile
+          context: frontend
+          file: frontend/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/hps-server:latest
