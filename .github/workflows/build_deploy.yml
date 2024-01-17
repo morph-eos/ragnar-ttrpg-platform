@@ -47,3 +47,10 @@ jobs:
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Debug
+      run: |
+        echo "DOCKER_USERNAME: $DOCKER_USERNAME"
+        echo "DOCKER_PASSWORD: $DOCKER_PASSWORD"
+        echo "GitHub event: $GITHUB_EVENT_NAME"
+        echo "GitHub ref: $GITHUB_REF"
+        echo "GitHub sha: $GITHUB_SHA"
