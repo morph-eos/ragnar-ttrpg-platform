@@ -19,7 +19,7 @@ jobs:
         node-version: 14
 
     - name: Install dependencies
-      run: npm run install-frontend && npm run install-server
+      run: npm run install-frontend
 
     - name: Build React app
       run: npm run build-frontend
