@@ -38,19 +38,13 @@ jobs:
 
     - name: Build Docker image
       uses: docker/build-push-action@v2
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       with:
         context: .
         file: ./Dockerfile
         platforms: linux/amd64,linux/arm64
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/hps-server:latest
-      env:
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-    - name: Debug
-      run: |
-        echo "DOCKER_USERNAME: $DOCKER_USERNAME"
-        echo "DOCKER_PASSWORD: $DOCKER_PASSWORD"
-        echo "GitHub event: $GITHUB_EVENT_NAME"
-        echo "GitHub ref: $GITHUB_REF"
-        echo "GitHub sha: $GITHUB_SHA"
+        tags: |
+          "$DOCKER_USERNAME"/hps-server:latest
