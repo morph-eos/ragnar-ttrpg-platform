@@ -50,18 +50,6 @@ jobs:
     - name: Remove stdcerts
       run: rm -rf ./compose/kickstart/stdcertbot
 
-    - name: Clean the servers root directory
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USERNAME }}
-        password: ${{ secrets.SERVER_PASSWORD }}
-        script: |
-          if [ ! -d "/root/compose" ]; then
-            mkdir /root/compose
-          fi
-          find /root/compose -mindepth 1 -not -path '/root/compose/certbot' -delete
-
     - name: Copy compose folder
       uses: appleboy/scp-action@master
       with:
@@ -78,6 +66,9 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
+          if [ ! -d "/root/compose" ]; then
+            mkdir /root/compose
+          fi
           if [ ! -d "/root/compose/certbot" ]; then
             docker stop $(docker ps -a -q)
             docker container prune -f
