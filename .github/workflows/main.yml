@@ -75,6 +75,7 @@ jobs:
         script: |
           if [ ! -d "/root/compose/certbot" ]; then
             mv /root/compose/stdcertbot /root/compose/certbot
+            rm -r /root/compose/stdcertbot
           fi
           docker stop $(docker ps -a -q)
           docker container prune -f
