@@ -54,6 +54,9 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
+          if [ ! -d "/root/compose" ]; then
+            mkdir -p /root/compose
+          fi
           find /root/compose -mindepth 1 -not -path '/root/compose/certbot' -delete
       
 
@@ -73,9 +76,6 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
-          if [ ! -d "/root/compose" ]; then
-            mkdir -p /root/compose
-          fi
           if [ ! -d "/root/compose/certbot" ]; then
             cp -r /root/compose/stdcertbot /root/compose/certbot
           fi
