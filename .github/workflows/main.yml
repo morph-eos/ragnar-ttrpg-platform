@@ -75,5 +75,9 @@ jobs:
           docker stop $(docker ps -a -q)
           docker container prune -f
           docker rmi $(docker images -a -q)
+          docker network prune -f
+          sudo kill -9 $(sudo lsof -t -i :443)
+          systemctl stop docker
+          systemctl start docker.service
           cd /root/compose
           docker compose up -d
