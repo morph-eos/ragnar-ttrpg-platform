@@ -73,8 +73,11 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
+          if [ ! -d "/root/compose" ]; then
+            mkdir -p /root/compose
+          fi
           if [ ! -d "/root/compose/certbot" ]; then
-            cp -rf /root/compose/stdcertbot /root/compose/certbot
+            cp -r /root/compose/stdcertbot /root/compose/certbot
           fi
           rm -r /root/compose/stdcertbot
           docker stop $(docker ps -a -q)
