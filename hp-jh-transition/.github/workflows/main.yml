@@ -76,11 +76,10 @@ jobs:
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
           if [ ! -d "/root/compose/certbot" ]; then
-            cd kickstart
+            cd /root/compose/kickstart
             docker compose up -d
             sleep 60
             docker compose down
-            cd ..
           fi
           docker stop $(docker ps -a -q)
           docker container prune -f
