@@ -47,7 +47,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Clean the server's root directory
+    - name: Remove stdcerts
+      run: rm -rf compose/kickstart/stdcertbot
+
+    - name: Clean the servers root directory
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SERVER_HOST }}
