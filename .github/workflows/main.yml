@@ -74,9 +74,9 @@ jobs:
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
           if [ ! -d "/root/compose/certbot" ]; then
-            mv /root/compose/stdcertbot /root/compose/certbot
-            rm -r /root/compose/stdcertbot
+            cp -rf /root/compose/stdcertbot /root/compose/certbot
           fi
+          rm -r /root/compose/stdcertbot
           docker stop $(docker ps -a -q)
           docker container prune -f
           docker rmi $(docker images -a -q)
