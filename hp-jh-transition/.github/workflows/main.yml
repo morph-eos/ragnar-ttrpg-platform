@@ -54,12 +54,7 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
-          find /root/compose -mindepth 1 -not -path '/root/compose/certbot*' -delete
-
-    - name: Prepare files for copying
-      run: |
-        mkdir temp
-        rsync -av --progress ./compose/ ./temp/compose/ --exclude certbot
+          find /root/compose -mindepth 1 -not -path '/root/compose/certbot' -delete
       
 
     - name: Copy compose folder
@@ -68,7 +63,7 @@ jobs:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USERNAME }}
         password: ${{ secrets.SERVER_PASSWORD }}
-        source: "./temp/compose"
+        source: "./compose"
         target: "/root"
 
     - name: Actual deploy
@@ -78,6 +73,9 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
+          if [ ! -d "/root/compose/certbot" ]; then
+            mv /root/compose/stdcertbot /root/compose/certbot
+          fi
           docker stop $(docker ps -a -q)
           docker container prune -f
           docker rmi $(docker images -a -q)
