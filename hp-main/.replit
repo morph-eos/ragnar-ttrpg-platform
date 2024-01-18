@@ -1,4 +1,0 @@
-run = "npm run build-frontend && npm run start-server"
-
-[deployment]
-run = ["sh", "-c", "npm run build-frontend && npm run start-server"]
