@@ -54,11 +54,9 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
-          if [ ! -d "/root/compose" ]; then
-            mkdir -p /root/compose
+          if [ -d "/root/compose" ]; then
+            find /root/compose -mindepth 1 -not -path '/root/compose/certbot' -delete
           fi
-          find /root/compose -mindepth 1 -not -path '/root/compose/certbot' -delete
-      
 
     - name: Copy compose folder
       uses: appleboy/scp-action@master
@@ -77,9 +75,12 @@ jobs:
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
           if [ ! -d "/root/compose/certbot" ]; then
-            cp -r /root/compose/stdcertbot /root/compose/certbot
+            cd kickstart
+            docker compose up -d
+            sleep 60
+            docker compose down
+            cd ..
           fi
-          rm -r /root/compose/stdcertbot
           docker stop $(docker ps -a -q)
           docker container prune -f
           docker rmi $(docker images -a -q)
