@@ -54,7 +54,8 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
-          rm -rf /root/*
+          rm -rf /root/docker-compose.yml
+          rm -rf /root/nginx/nginx.conf
 
     - name: Copy compose folder
       uses: appleboy/scp-action@master
@@ -62,7 +63,7 @@ jobs:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USERNAME }}
         password: ${{ secrets.SERVER_PASSWORD }}
-        source: "./compose"
+        source: "./compose/*"
         target: "/root"
 
     - name: Actual deploy
@@ -73,7 +74,6 @@ jobs:
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
           docker stop $(docker ps -a -q)
-          docker rm $(docker ps -a -q)
+          docker container prune -f
           docker rmi $(docker images -a -q)
-
-          docker run -d -p 80:80 -v /path/to/your/folder:/root ${{ secrets.DOCKER_USERNAME }}/hps-server:latest
+          docker compose up -d
