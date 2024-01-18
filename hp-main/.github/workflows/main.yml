@@ -56,13 +56,19 @@ jobs:
         script: |
           find /root/compose -mindepth 1 -not -path '/root/compose/certbot*' -delete
 
+    - name: Prepare files for copying
+      run: |
+        mkdir temp
+        rsync -av --progress ./compose/ ./temp/compose/ --exclude certbot
+      
+
     - name: Copy compose folder
       uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USERNAME }}
         password: ${{ secrets.SERVER_PASSWORD }}
-        source: "./compose"
+        source: "./temp/compose"
         target: "/root"
 
     - name: Actual deploy
