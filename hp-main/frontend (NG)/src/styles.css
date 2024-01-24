@@ -1,1 +1,44 @@
-/* You can add global styles to this file, and also import other style files */
+html {
+    background-color: black;
+}
+#navbar {
+    background-color: orange;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    border-radius: 40px; /* Imposta il raggio di curvatura degli angoli */
+}
+
+img[alt~="Logo"] {
+height: 60px;
+margin-right: 20px;
+margin-left: -19px;
+}
+
+/*---
+spazio Tailwind
+---*/
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definisci la tua palette di colori personalizzata */
+@layer utilities {
+.bg-orange {
+    background-color: orange;
+}
+}
+
+.btn-bullet {
+@apply px-4 py-2 rounded-full font-semibold text-white;
+}
+
+.btn-bullet-active {
+@apply px-4 py-2 rounded-full font-semibold text-black border border-black;
+}
+
+.btn-bullet-orange {
+@apply bg-orange;
+}
