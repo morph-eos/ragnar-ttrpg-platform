@@ -27,7 +27,7 @@ jobs:
     - name: Build Angular app
       run: |
         cd ./frontend
-        ng build --prod
+        ng build --configuration production
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
