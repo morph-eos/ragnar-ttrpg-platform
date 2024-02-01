@@ -5,7 +5,7 @@ FROM eclipse-temurin:17-jdk
 WORKDIR /app
 
 # Copy the JAR file and any necessary dependencies to the container
-COPY target /app
+COPY ./target /app
 
 # Expose the port that the Spring Boot application listens on
 EXPOSE 8080
