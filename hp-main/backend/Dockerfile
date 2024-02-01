@@ -5,7 +5,10 @@ FROM eclipse-temurin:17-jdk
 WORKDIR /app
 
 # Copy the JAR file to the container
-COPY backend/target/backend.jar /app/backend.jar
+COPY backend/target /app
+
+# Copy the frontend build to the container
+COPY frontend/dist /app/src/main/resources/static
 
 # Expose the port that the Spring Boot application listens on
 EXPOSE 8080

@@ -34,7 +34,7 @@ jobs:
         java-version: '17'
         distribution: 'adopt'
 
-    - name: Build Spring Boot app
+    - name: Build Spring app
       run: |
         cd ./backend
         mvn clean package -DskipTests
