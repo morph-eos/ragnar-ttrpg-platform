@@ -1,6 +1,11 @@
 html {
     background-color: black;
 }
+
+.new-h-screen {
+    height: calc(100vh - 60px);
+}
+
 #navbar {
     background-color: rgb(255, 165, 0);
     height: 60px;
