@@ -2,18 +2,26 @@ html {
     background-color: black;
 }
 #navbar {
-    background-color: orange;
+    background-color: rgb(255, 165, 0);
     height: 60px;
     display: flex;
     align-items: center;
     padding: 0 20px;
-    border-radius: 40px; /* Imposta il raggio di curvatura degli angoli */
+    border-radius: 40px;
 }
 
-img[alt~="Logo"] {
-height: 60px;
-margin-right: 20px;
-margin-left: -19px;
+img[alt~="baricon"] {
+    height: 60px;
+}
+
+img[alt~="logo"] {
+    margin-right: 20px;
+    margin-left: -20px;
+}
+
+img[alt~="login"] {
+    margin-right: -20px;
+    margin-left: 20px;
 }
 
 /*---
