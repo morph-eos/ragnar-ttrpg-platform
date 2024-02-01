@@ -4,6 +4,8 @@ FROM eclipse-temurin:17-jdk
 # Set the working directory inside the container
 WORKDIR /app
 
+RUN ls -la
+
 # Copy the JAR file to the container
 COPY target/backend.jar /app/backend.jar
 
