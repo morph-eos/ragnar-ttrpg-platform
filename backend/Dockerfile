@@ -8,7 +8,7 @@ WORKDIR /app
 COPY backend/target /app
 
 # Copy the frontend build to the container
-COPY frontend/dist /app/src/main/resources/static/frontend
+COPY frontend/dist/com.heatpeakstudio.frontend/browser/ /app/src/main/resources/static/
 
 # Expose the port that the Spring Boot application listens on
 EXPOSE 8080
