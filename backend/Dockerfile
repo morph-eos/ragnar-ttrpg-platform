@@ -8,7 +8,7 @@ WORKDIR /app
 COPY backend/target /app
 
 # Copy the frontend build to the container
-COPY frontend/dist /app/src/main/resources/static
+COPY frontend/dist /app/src/main/resources/static/frontend
 
 # Expose the port that the Spring Boot application listens on
 EXPOSE 8080
