@@ -1,7 +1,14 @@
-FROM openjdk:17
+# Use the official OpenJDK 17 image as the base image
+FROM adoptopenjdk:17-jdk-hotspot
 
-COPY target/backend-0.0.1-SNAPSHOT.jar ./backend.jar
+# Set the working directory inside the container
+WORKDIR /app
 
-COPY ./frontend/dist ./frontend
+# Copy the JAR file and any necessary dependencies to the container
+COPY target /app
 
-ENTRYPOINT ["java", "-jar", "backend.jar"]
+# Expose the port that the Spring Boot application listens on
+EXPOSE 8080
+
+# Set the entry point for the container
+ENTRYPOINT ["java", "-jar", "/app/backend.jar"]
