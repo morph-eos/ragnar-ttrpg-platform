@@ -13,10 +13,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebRoutingConfig implements WebMvcConfigurer { 
  
   @Override 
-  public void addViewControllers(ViewControllerRegistry registry) { 
-      registry.addViewController("/urlNotFound") 
-      // the viewName should be specified, in our case we forward to the index.html 
-      .setViewName("forward:/index.html"); 
+  public void addViewControllers(@SuppressWarnings("null") ViewControllerRegistry registry) { 
+      registry.addViewController("/urlNotFound")
+      .setViewName("forward:/index.html");
   } 
  
   @Bean 
