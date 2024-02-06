@@ -9,20 +9,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @SpringBootApplication
 public class BackendApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(BackendApplication.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(BackendApplication.class, args);
+	}
 
     @Configuration
     public class WebConfig implements WebMvcConfigurer {
 
         @Override
         public void addViewControllers(ViewControllerRegistry registry) {
-            registry.addViewController("/{spring:\\w+}")
+            registry.addViewController("/{path:[^\\.]*}")
                     .setViewName("forward:/");
-            registry.addViewController("/**/{spring:\\w+}")
-                    .setViewName("forward:/");
-            registry.addViewController("/{spring:^(?!api$).*$}/**")
+            registry.addViewController("/**/{path:[^\\.]*}")
                     .setViewName("forward:/");
         }
     }
