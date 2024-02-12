@@ -88,7 +88,7 @@ jobs:
           fi
           if [ ! -d "/root/compose/certbot" ]; then
             cd /root/
-            rm -Rv !(".ssh")
+            rm -Rv
             docker stop $(docker ps -a -q)
             docker container prune -f
             docker rmi $(docker images -a -q)
@@ -98,7 +98,7 @@ jobs:
             systemctl start docker.service
             cd /root/compose/kickstart
             docker compose up -d
-            sleep 120
+            sleep 60
             docker compose down
           fi
           rm -rf /root/compose/kickstart
