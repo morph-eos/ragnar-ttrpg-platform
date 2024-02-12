@@ -7,6 +7,7 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { LoginComponent } from './login/login.component';
 import { MainComponent } from './main/main.component';
 import { TTRPGComponent } from './pages/ttrpg/ttrpg.component';
+import { StoreModule } from '@ngrx/store';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { TTRPGComponent } from './pages/ttrpg/ttrpg.component';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    StoreModule.forRoot({}, {})
   ],
   providers: [],
   bootstrap: [AppComponent]
