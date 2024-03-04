@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://hps-server.onrender.com/">
-    <img src="./frontend/src/assets/logo.png" width="500px" alt="HeatPeakStudio Preview">
+    <img src="./frontend/src/assets/logo.png" width="300px" alt="HeatPeakStudio Preview">
   </a>
   <br>
   <i>Click the image to visit the website</i>
