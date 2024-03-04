@@ -34,12 +34,6 @@ The repository contains previous implementations of the project in React and Nod
 
 ---
 
-## Contributions
-
-~~We are open to contributions! If you would like to contribute to this project, feel free to create a pull request. For any issues or suggestions, open an issue in our tracker.~~
-
----
-
 ## License
 
 This project is licensed under the terms of the MIT license.
