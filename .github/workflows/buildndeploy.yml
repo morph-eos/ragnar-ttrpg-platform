@@ -1,0 +1,99 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  deploy:
+
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Clean the environment
+      uses: appleboy/ssh-action@master
+      with:
+        host: cloud.${{ secrets.DOMAIN }}
+        username: ${{ secrets.CLOUD_USERNAME }}
+        password: ${{ secrets.CLOUD_PASSWORD }}
+        script: |
+          sudo chown -R ${{ secrets.CLOUD_USERNAME }}:${{ secrets.CLOUD_USERNAME }} /root
+          sudo rm -rf /root/docker
+
+    - name: Copy repository to the server
+      uses: appleboy/scp-action@master
+      with:
+        host: cloud.${{ secrets.DOMAIN }}
+        username: ${{ secrets.CLOUD_USERNAME }}
+        password: ${{ secrets.CLOUD_PASSWORD }}
+        source: "."
+        target: "/root/docker"
+
+    - name: Actual deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: cloud.${{ secrets.DOMAIN }}
+        username: ${{ secrets.CLOUD_USERNAME }}
+        password: ${{ secrets.CLOUD_PASSWORD }}
+        script: |
+          sudo touch /etc/environment
+          secrets_array=("CERTBOT_EMAIL" "MYSQL_DATABASE" "MYSQL_HOST" "MYSQL_USER" "MYSQL_PASSWORD" "NEXTCLOUD_ADMIN_USER" "NEXTCLOUD_ADMIN_PASSWORD" "DOMAIN")
+          for secret in "${secrets_array[@]}"; do
+            sudo sed -i "/^${secret}=/d" /etc/environment || true
+            case "${secret}" in
+              "CERTBOT_EMAIL")
+                echo "CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}" | sudo tee -a /etc/environment
+                ;;
+              "MYSQL_DATABASE")
+                echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}" | sudo tee -a /etc/environment
+                ;;
+              "MYSQL_HOST")
+                echo "MYSQL_HOST=${{ secrets.MYSQL_HOST }}" | sudo tee -a /etc/environment
+                ;;
+              "MYSQL_USER")
+                echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" | sudo tee -a /etc/environment
+                ;;
+              "MYSQL_PASSWORD")
+                echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" | sudo tee -a /etc/environment
+                ;;
+              "NEXTCLOUD_ADMIN_USER")
+                echo "NEXTCLOUD_ADMIN_USER=${{ secrets.NEXTCLOUD_ADMIN_USER }}" | sudo tee -a /etc/environment
+                ;;
+              "NEXTCLOUD_ADMIN_PASSWORD")
+                echo "NEXTCLOUD_ADMIN_PASSWORD=${{ secrets.NEXTCLOUD_ADMIN_PASSWORD }}" | sudo tee -a /etc/environment
+                ;;
+              "DOMAIN")
+                echo "DOMAIN=${{ secrets.DOMAIN }}" | sudo tee -a /etc/environment
+                ;;
+              *)
+                echo "Unknown secret: ${secret}"
+                ;;
+            esac
+          done
+          for env in $( cat /etc/environment ); do export $(echo $env | sed -e 's/"//g'); done
+          sed -i "s/\$DOMAIN/$DOMAIN/g" /root/docker/web/nginx.conf
+          sed -i "s/\$DOMAIN/$DOMAIN/g" /root/docker/kickstart/web/nginx.conf
+          if [ ! -d "/root/data" ]; then
+            sudo mkdir /root/data
+          fi
+          sudo docker stop $(sudo docker ps -a -q)
+          sudo docker container prune -f
+          sudo docker network prune -f
+          sudo kill -9 $(sudo lsof -t -i :443)
+          sudo kill -9 $(sudo lsof -t -i :80)
+          sudo systemctl stop docker
+          sudo systemctl start docker.service
+          if [ ! -d "/root/data/certbot" ]; then
+            cd /root/docker/kickstart
+            sudo docker compose up -d
+            sleep 60
+            sudo docker compose down
+            sudo docker stop $(sudo docker ps -a -q)
+            sudo docker container prune -f
+          fi
+          cd /root/docker
+          sudo docker compose up -d
