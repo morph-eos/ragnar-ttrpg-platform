@@ -2,7 +2,6 @@ package com.jugglehive.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -12,19 +11,21 @@ import lombok.Data;
 
 @Entity
 @Data
-public class AllowedItem {
+public class RaceSkill {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "class_id", nullable = false, insertable = false, updatable = false)
-    private ClassEntity classVar; //ClassEntity / classVar
-    
+    @ManyToOne
+    @JoinColumn(name = "race_id")
+    private Race race;
 
-    @Column(name = "item_type", nullable = false, length = 255)
-    private String itemType;
+    @ManyToOne
+    @JoinColumn(name = "skill_tree_id")
+    private TreeEntity tree;
 
+    @Column(name = "slot")
+    private Integer slot;
 }

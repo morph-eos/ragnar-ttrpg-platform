@@ -14,7 +14,7 @@ public class BaseStats {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false)
-  private Integer id;
+  private Long id;
 
   @Column(name = "vitality")
   private Integer vitality;
