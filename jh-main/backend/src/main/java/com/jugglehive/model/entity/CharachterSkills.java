@@ -10,10 +10,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 
 public class CharachterSkills {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "character_id", nullable = false)
-    private Integer characterId;
+    @Column(name = "id", nullable = false)
+    private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "character_id", nullable = false, insertable = false, updatable = false)
