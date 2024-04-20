@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 
 @Entity
 public class CharacterInfo {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
