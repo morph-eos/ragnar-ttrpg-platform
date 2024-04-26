@@ -26,6 +26,12 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
+<dependency>
+  <groupId>org.springdoc</groupId>
+  <artifactId>springdoc-openapi-ui</artifactId>
+  <version>1.7.0</version> <!-- Usa l'ultima versione -->
+</dependency>
+
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
