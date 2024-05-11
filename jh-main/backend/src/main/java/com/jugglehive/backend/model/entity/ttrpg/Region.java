@@ -1,4 +1,4 @@
-package com.jugglehive.backend.model.entity;
+package com.jugglehive.backend.model.entity.ttrpg;
 
 import java.util.List;
 

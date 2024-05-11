@@ -1,4 +1,4 @@
-package com.jugglehive.backend.model.entity;
+package com.jugglehive.backend.model.entity.ttrpg;
 
 import com.jugglehive.backend.model.enums.StatScaling;
 import com.jugglehive.backend.model.enums.StatTarget;

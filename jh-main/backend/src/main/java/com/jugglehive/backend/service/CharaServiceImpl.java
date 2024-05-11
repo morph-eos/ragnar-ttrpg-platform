@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.jugglehive.backend.exception.customExceptions.NoCharactersFoundException;
-import com.jugglehive.backend.model.entity.Chara;
+import com.jugglehive.backend.model.entity.ttrpg.Chara;
 import com.jugglehive.backend.repository.CharaRepository;
 
 @Service

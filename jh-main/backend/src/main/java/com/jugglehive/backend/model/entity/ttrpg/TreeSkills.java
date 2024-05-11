@@ -1,4 +1,4 @@
-package com.jugglehive.backend.model.entity;
+package com.jugglehive.backend.model.entity.ttrpg;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,21 +13,22 @@ import lombok.Data;
 @Entity
 @Data
 @Table(schema = "ttrpg")
-public class RaceSkill {
+public class TreeSkills {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-
+    
     @ManyToOne
-    @JoinColumn(name = "race_id")
-    private Race race;
-
-    @ManyToOne
-    @JoinColumn(name = "skill_tree_id")
+    @JoinColumn(name = "tree_id", nullable = false)
     private TreeEntity tree;
 
-    @Column(name = "slot")
-    private Integer slot;
+    @ManyToOne
+    @JoinColumn(name = "skill_family_id", nullable = false)
+    private SkillFamily skillFamily;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_skill_family_id")
+    private SkillFamily parentSkill;
 }

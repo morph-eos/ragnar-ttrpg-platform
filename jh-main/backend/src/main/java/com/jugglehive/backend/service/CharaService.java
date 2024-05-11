@@ -3,7 +3,7 @@ package com.jugglehive.backend.service;
 import java.util.List;
 
 import com.jugglehive.backend.exception.customExceptions.NoCharactersFoundException;
-import com.jugglehive.backend.model.entity.Chara;
+import com.jugglehive.backend.model.entity.ttrpg.Chara;
 
 public interface CharaService {
 

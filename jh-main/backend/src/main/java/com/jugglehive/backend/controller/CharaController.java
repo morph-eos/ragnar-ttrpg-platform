@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jugglehive.backend.exception.customExceptions.NoCharactersFoundException;
-import com.jugglehive.backend.model.entity.Chara;
+import com.jugglehive.backend.model.entity.ttrpg.Chara;
 import com.jugglehive.backend.service.CharaService;
 
 @RestController
