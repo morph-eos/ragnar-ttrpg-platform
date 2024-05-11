@@ -1,6 +1,9 @@
 package com.jugglehive.backend.model.entity.ttrpg;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.jugglehive.backend.model.entity.login.User;
 
@@ -11,9 +14,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -54,11 +56,34 @@ public class Chara {
   @JoinColumn(name = "lvl_up_stat_id", nullable = false)
   private BaseStats lvlUpStat;
 
-  @ManyToMany(fetch = FetchType.EAGER)
-  @JoinTable(name = "character_classes",
-      joinColumns = @JoinColumn(name = "character_id", nullable = false),
-      inverseJoinColumns = @JoinColumn(name = "class_id", nullable = false))
-  private List<ClassEntity> classes;
+  @OneToMany(mappedBy = "chara")
+  private List<CharacterClasses> classes = new ArrayList<>();
 
-  // Getters and Setters
+  // Method that calculates the total stats of the character
+  // #TODO Implement the method
+  public Map<String, Integer> getCurrentStats() {
+
+    // chara.lvlupstats da moltiplicare per il livello (credo)
+    // chara.classes da sommare le stats
+    // chara.race sommare le stats
+    Map<String, Integer> stats = new HashMap<>();
+
+    // Aggiungere o sommare il valore per la chiave "strength"
+    stats.put("strength", stats.getOrDefault("strength", 0) + 9000); // Aggiunge 9000
+    stats.put("strength", stats.getOrDefault("strength", 0) + 200);  // Somma 200
+    return stats;
+  }
+
+  // Method that returns the names of the classes of the character
+  public List<String> getClassesNames() {
+
+    List<String> names = new ArrayList<>();
+
+    for (CharacterClasses characterClasses : this.classes) {
+      names.add(characterClasses.getClassEntity().getName());
+    }
+
+    System.out.println(names);
+    return names;
+  }
 }
