@@ -1,7 +1,8 @@
-package com.jugglehive.backend.model.entity;
+package com.jugglehive.backend.model.entity.ttrpg;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,22 +14,19 @@ import lombok.Data;
 @Entity
 @Data
 @Table(schema = "ttrpg")
-public class TreeSkills {
+public class AllowedItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "class_id", nullable = false, insertable = false, updatable = false)
+    private ClassEntity classVar; //ClassEntity / classVar
     
-    @ManyToOne
-    @JoinColumn(name = "tree_id", nullable = false)
-    private TreeEntity tree;
 
-    @ManyToOne
-    @JoinColumn(name = "skill_family_id", nullable = false)
-    private SkillFamily skillFamily;
+    @Column(name = "item_type", nullable = false, length = 255)
+    private String itemType;
 
-    @ManyToOne
-    @JoinColumn(name = "parent_skill_family_id")
-    private SkillFamily parentSkill;
 }
