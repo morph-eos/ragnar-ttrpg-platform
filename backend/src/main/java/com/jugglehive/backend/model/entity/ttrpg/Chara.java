@@ -61,36 +61,26 @@ public class Chara {
   private List<CharacterClasses> classes = new ArrayList<>();
 
   // Method that calculates the total stats of the character
-  // chara.lvlupstats da moltiplicare per il livello (credo)
-  // chara.classes da sommare le stats
-  // chara.race sommare le stats
-  // #TODO Implement the method
   public Map<String, Integer> getCurrentStats() {
     
     Map<String, Integer> stats = new HashMap<>();
 
     for (Map.Entry<String, Integer> entry : lvlUpStat.getStats().entrySet()) {
       stats.put(entry.getKey(), stats.getOrDefault(entry.getKey(), 0) + entry.getValue() * info.getLevel());
-  }
+    }
 
     for (Map.Entry<String, Integer> entry : race.getStats().getStats().entrySet()) {
         stats.put(entry.getKey(), stats.getOrDefault(entry.getKey(), 0) + entry.getValue());
     }
 
     for (CharacterClasses characterClasses : classes) {
-        Map<String, Integer> classStats = characterClasses.getClassEntity().getStats().getStats();
-        for (Map.Entry<String, Integer> entry : classStats.entrySet()) {
+        for (Map.Entry<String, Integer> entry : characterClasses.getClassEntity().getStats().getStats().entrySet()) {
             stats.put(entry.getKey(), stats.getOrDefault(entry.getKey(), 0) + entry.getValue());
         }
-      }
+    }
       
-      return stats;
-      
-      
-      // Aggiungere o sommare il valore per la chiave "strength"
-      // stats.put("strength", stats.getOrDefault("strength", 0) + 9000); // Aggiunge 9000
-      // stats.put("strength", stats.getOrDefault("strength", 0) + 200);  // Somma 200
-}
+    return stats;
+  }
 
 
   public Map<String, Integer> getCurrentStats2() {
