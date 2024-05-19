@@ -55,7 +55,7 @@ jobs:
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ github.event.client_payload.token }}
     
     - name: Test Image pull
       run: docker pull ghcr.io/${{ github.repository_owner }}/${{ github.event.client_payload.service }}:latest
