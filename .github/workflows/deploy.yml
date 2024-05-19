@@ -19,9 +19,9 @@ jobs:
     - name: Set key
       run: |
         if [[ "${{ github.event.client_payload.service }}" == "webapp" ]]; then
-          echo -e "PRESENT_KEY=${{ secrets.WEBAPP_SERVER_KEY }}" >> ${{ secrets.PRESENT_KEY }}
+          echo -e "PRESENT_KEY=${{ secrets.WEBAPP_SERVER_KEY }}" >> $GITHUB_ENV
         elif [[ "${{ github.event.client_payload.service }}" == "cloud" ]]; then
-          echo -e "PRESENT_KEY=${{ secrets.CLOUD_SERVER_KEY }}" >> ${{ secrets.PRESENT_KEY }}
+          echo -e "PRESENT_KEY=${{ secrets.CLOUD_SERVER_KEY }}" >> $GITHUB_ENV
         fi
 
     - name: Clean the environment
@@ -29,7 +29,7 @@ jobs:
       with:
         host: ${{ github.event.client_payload.server }}
         username: ${{ secrets.SERVER_USERNAME }}
-        key: ${{ secrets.PRESENT_KEY }}
+        key: ${{ env.PRESENT_KEY }}
         script: |
           sudo chown -R ${{ secrets.SERVER_USERNAME }}:${{ secrets.SERVER_USERNAME }} /root
           sudo rm -rf /root/docker
@@ -39,7 +39,7 @@ jobs:
       with:
         host: ${{ github.event.client_payload.server }}
         username: ${{ secrets.SERVER_USERNAME }}
-        key: ${{ secrets.PRESENT_KEY }}
+        key: ${{ env.PRESENT_KEY }}
         source: "."
         target: "/root/docker"
 
