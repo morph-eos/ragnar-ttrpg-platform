@@ -1,0 +1,127 @@
+name: Deploy
+
+on:
+  repository_dispatch:
+    types: [jugglehive-deploy]
+
+jobs:
+
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.client_payload.sha }}
+
+    - name: Clean the environment
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ github.event.client_payload.server }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        key: ${{ github.event.client_payload.key }}
+        script: |
+          sudo chown -R ${{ secrets.SERVER_USERNAME }}:${{ secrets.SERVER_USERNAME }} /root
+          sudo rm -rf /root/docker
+
+    - name: Copy repository to the server
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ github.event.client_payload.server }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        key: ${{ github.event.client_payload.key }}
+        source: "."
+        target: "/root/docker"
+
+    - name: Actual deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ github.event.client_payload.server }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        key: ${{ github.event.client_payload.key }}
+        script: |
+          sudo touch /etc/environment
+          secrets_array=("CERTBOT_EMAIL" "MYSQL_DATABASE" "MYSQL_HOST" "MYSQL_DATABASE" "MYSQL_USER" "MYSQL_PASSWORD" "POSTGRES_HOST" "POSTGRES_DATABASE" "POSTGRES_HOST" "POSTGRES_DATABASE" "POSTGRES_USER" "POSTGRES_PASSWORD" "NEXTCLOUD_ADMIN_USER" "NEXTCLOUD_ADMIN_PASSWORD" "DOMAIN" "AZURE_STORAGE_ACCOUNT_KEY" "AZURE_STORAGE_ACCOUNT_NAME")
+          for secret in "${secrets_array[@]}"; do
+            sudo sed -i "/^${secret}=/d" /etc/environment || true
+            case "${secret}" in
+              "CERTBOT_EMAIL")
+                echo "CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}" | sudo tee -a /etc/environment
+                ;;
+              "MYSQL_DATABASE")
+                echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}" | sudo tee -a /etc/environment
+                ;;
+              "MYSQL_HOST")
+                echo "MYSQL_HOST=${{ secrets.MYSQL_HOST }}" | sudo tee -a /etc/environment
+                ;;
+              "MYSQL_DATABASE")
+                echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}" | sudo tee -a /etc/environment
+                ;;
+              "MYSQL_USER")
+                echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" | sudo tee -a /etc/environment
+                ;;
+              "MYSQL_PASSWORD")
+                echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" | sudo tee -a /etc/environment
+                ;;
+              "POSTGRES_HOST")
+                echo "POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}" | sudo tee -a /etc/environment
+                ;;
+              "POSTGRES_DATABASE")
+                echo "POSTGRES_DATABASE=${{ secrets.POSTGRES_DATABASE }}" | sudo tee -a /etc/environment
+                ;;
+              "POSTGRES_USER")
+                echo "POSTGRES_USER=${{ secrets.POSTGRES_DATABASE }}" | sudo tee -a /etc/environment
+                ;;
+              "NEXTCLOUD_ADMIN_USER")
+                echo "NEXTCLOUD_ADMIN_USER=${{ secrets.NEXTCLOUD_ADMIN_USER }}" | sudo tee -a /etc/environment
+                ;;
+              "NEXTCLOUD_ADMIN_PASSWORD")
+                echo "NEXTCLOUD_ADMIN_PASSWORD=${{ secrets.NEXTCLOUD_ADMIN_PASSWORD }}" | sudo tee -a /etc/environment
+                ;;
+              "DOMAIN")
+                echo "DOMAIN=${{ secrets.DOMAIN }}" | sudo tee -a /etc/environment
+                ;;
+              "AZURE_STORAGE_ACCOUNT_KEY")
+                echo "AZURE_STORAGE_ACCOUNT_KEY=${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}" | sudo tee -a /etc/environment
+                ;;
+              "AZURE_STORAGE_ACCOUNT_NAME")
+                echo "AZURE_STORAGE_ACCOUNT_NAME=${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}" | sudo tee -a /etc/environment
+                ;;
+              *)
+                echo "Unknown secret: ${secret}"
+                ;;
+            esac
+          done
+          for env in $( cat /etc/environment ); do export $(echo $env | sed -e 's/"//g'); done
+          sed -i "s/\$DOMAIN/$DOMAIN/g" /root/docker/web/nginx.conf
+          sed -i "s/\$DOMAIN/$DOMAIN/g" /root/docker/kickstart/web/nginx.conf
+          if [ ! -d "/root/data" ]; then
+            sudo mkdir /root/data
+          fi
+          sudo docker stop $(sudo docker ps -a -q)
+          sudo docker container prune -f
+          if ${{ github.event.client_payload.service }} == "webapp"; then
+            echo "IMG_NAME=ghcr.io/${{ github.repository_owner }}/${{ github.event.client_payload.service }}" | sudo tee -a /etc/environment
+            sudo docker rmi $IMG_NAME
+          fi
+          sudo docker network prune -f
+          sudo kill -9 $(sudo lsof -t -i :443)
+          sudo kill -9 $(sudo lsof -t -i :80)
+          sudo systemctl stop docker
+          sudo systemctl start docker.service
+          if [ ! -d "/root/data/certbot" ]; then
+            cd /root/docker/kickstart
+            sudo docker compose up -d
+            sleep 60
+            sudo docker compose down
+            sudo docker stop $(sudo docker ps -a -q)
+            sudo docker container prune -f
+          fi
+          if ${{ github.event.client_payload.service }} == "webapp"; then
+            for url in $(sudo cat ~/.docker/config.json | jq -r '.auths | keys | .[]'); do sudo docker logout $url; done
+            echo "${{ secrets.GITHUB_TOKEN }}" | sudo docker login ghcr.io -u $ --password-stdin
+          fi
+          cd /root/docker
+          sudo docker compose up -d
