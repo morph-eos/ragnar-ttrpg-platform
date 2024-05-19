@@ -141,7 +141,7 @@ jobs:
           fi
           if ${{ github.event.client_payload.service }} == "webapp"; then
             for url in $(sudo cat ~/.docker/config.json | jq -r '.auths | keys | .[]'); do sudo docker logout $url; done
-            echo "${{ secrets.CONTENTS_PAT }}" | sudo docker login ghcr.io -u $ --password-stdin
+            echo "${{ github.event.client_payload.token }}" | sudo docker login ghcr.io -u $ --password-stdin
           fi
           cd /root/docker
           sudo docker compose up -d
