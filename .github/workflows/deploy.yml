@@ -50,22 +50,12 @@ jobs:
             sudo mv /root/repo /root/docker
           fi
 
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Test Image pull
-      run: docker pull ghcr.io/${{ github.repository_owner }}/${{ github.event.client_payload.service }}:latest
-
     - name: Actual deploy
       uses: appleboy/ssh-action@master
       with:
         host: ${{ github.event.client_payload.server }}
         username: ${{ secrets.SERVER_USERNAME }}
-        key: ${{ secrets.PACKAGES_PAT }}
+        key: ${{ secrets.SERVER_KEY }}
         script: |
           sudo touch /etc/environment
           secrets_array=("CERTBOT_EMAIL" "MYSQL_DATABASE" "MYSQL_HOST" "MYSQL_DATABASE" "MYSQL_USER" "MYSQL_PASSWORD" "POSTGRES_HOST" "POSTGRES_DATABASE" "POSTGRES_HOST" "POSTGRES_DATABASE" "POSTGRES_USER" "POSTGRES_PASSWORD" "NEXTCLOUD_ADMIN_USER" "NEXTCLOUD_ADMIN_PASSWORD" "DOMAIN" "AZURE_STORAGE_ACCOUNT_KEY" "AZURE_STORAGE_ACCOUNT_NAME" "IMG_NAME")
@@ -133,7 +123,9 @@ jobs:
           fi
           sudo docker stop $(sudo docker ps -a -q)
           sudo docker container prune -f
-          sudo docker rmi $IMG_NAME
+          if ${{ github.event.client_payload.service }} == "webapp"; then
+            sudo docker rmi $IMG_NAME
+          fi
           sudo docker network prune -f
           sudo kill -9 $(sudo lsof -t -i :443)
           sudo kill -9 $(sudo lsof -t -i :80)
@@ -146,6 +138,10 @@ jobs:
             sudo docker compose down
             sudo docker stop $(sudo docker ps -a -q)
             sudo docker container prune -f
+          fi
+          if ${{ github.event.client_payload.service }} == "webapp"; then
+            for url in $(sudo cat ~/.docker/config.json | jq -r '.auths | keys | .[]'); do sudo docker logout $url; done
+            echo "${{ secrets.GITHUB_TOKEN }}" | sudo docker login ghcr.io -u $ --password-stdin
           fi
           cd /root/docker
           sudo docker compose up -d
