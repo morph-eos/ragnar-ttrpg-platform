@@ -12,10 +12,11 @@ jobs:
     steps:
 
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@master
       with:
-        ref: ${{ github.event.client_payload.sha }}
-
+        repository: ${{ github.repository_owner }}/${{ github.event.client_payload.service }} 
+        token: ${{ secrets.CONTENTS_PAT }}
+      
     - name: Clean the environment
       uses: appleboy/ssh-action@master
       with:
