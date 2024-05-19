@@ -58,7 +58,7 @@ jobs:
         key: ${{ secrets.SERVER_KEY }}
         script: |
           sudo touch /etc/environment
-          secrets_array=("CERTBOT_EMAIL" "MYSQL_DATABASE" "MYSQL_HOST" "MYSQL_DATABASE" "MYSQL_USER" "MYSQL_PASSWORD" "POSTGRES_HOST" "POSTGRES_DATABASE" "POSTGRES_HOST" "POSTGRES_DATABASE" "POSTGRES_USER" "POSTGRES_PASSWORD" "NEXTCLOUD_ADMIN_USER" "NEXTCLOUD_ADMIN_PASSWORD" "DOMAIN" "AZURE_STORAGE_ACCOUNT_KEY" "AZURE_STORAGE_ACCOUNT_NAME")
+          secrets_array=("CERTBOT_EMAIL" "MYSQL_DATABASE" "MYSQL_HOST" "MYSQL_DATABASE" "MYSQL_USER" "MYSQL_PASSWORD" "POSTGRES_HOST" "POSTGRES_DATABASE" "POSTGRES_HOST" "POSTGRES_DATABASE" "POSTGRES_USER" "POSTGRES_PASSWORD" "NEXTCLOUD_ADMIN_USER" "NEXTCLOUD_ADMIN_PASSWORD" "DOMAIN" "AZURE_STORAGE_ACCOUNT_KEY" "AZURE_STORAGE_ACCOUNT_NAME" "IMG_NAME")
           for secret in "${secrets_array[@]}"; do
             sudo sed -i "/^${secret}=/d" /etc/environment || true
             case "${secret}" in
@@ -107,14 +107,14 @@ jobs:
               "AZURE_STORAGE_ACCOUNT_NAME")
                 echo "AZURE_STORAGE_ACCOUNT_NAME=${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}" | sudo tee -a /etc/environment
                 ;;
+              "IMG_NAME")
+                echo "IMG_NAME=ghcr.io/${{ github.repository_owner }}/${{ github.event.client_payload.service }}" | sudo tee -a /etc/environment
+                ;;
               *)
                 echo "Unknown secret: ${secret}"
                 ;;
             esac
           done
-          if ${{ github.event.client_payload.service }} == "webapp"; then
-            echo "IMG_NAME=ghcr.io/${{ github.repository_owner }}/${{ github.event.client_payload.service }}" | sudo tee -a /etc/environment
-          fi
           for env in $( cat /etc/environment ); do export $(echo $env | sed -e 's/"//g'); done
           sed -i "s/\$DOMAIN/$DOMAIN/g" /root/docker/web/nginx.conf
           sed -i "s/\$DOMAIN/$DOMAIN/g" /root/docker/kickstart/web/nginx.conf
