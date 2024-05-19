@@ -49,6 +49,8 @@ jobs:
           else
             sudo mv /root/repo /root/docker
           fi
+          echo "${{ github.event.client_payload.actor }}"
+          echo "${{ github.event.client_payload.token }}"
 
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
