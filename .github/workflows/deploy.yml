@@ -34,7 +34,21 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SERVER_KEY }}
         source: "."
-        target: "/root/docker"
+        target: "/root/repo"
+
+    - name: Reorganize files
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ github.event.client_payload.server }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        key: ${{ secrets.SERVER_KEY }}
+        script: |
+          if [ -d "/root/repo/docker" ]; then
+            sudo mv /root/repo/docker /root/docker
+            sudo rm -rf /root/repo
+          else
+            sudo mv /root/repo /root/docker
+          fi
 
     - name: Actual deploy
       uses: appleboy/ssh-action@master
