@@ -112,6 +112,9 @@ jobs:
                 ;;
             esac
           done
+          if ${{ github.event.client_payload.service }} == "webapp"; then
+            echo "IMG_NAME=ghcr.io/${{ github.repository_owner }}/${{ github.event.client_payload.service }}" | sudo tee -a /etc/environment
+          fi
           for env in $( cat /etc/environment ); do export $(echo $env | sed -e 's/"//g'); done
           sed -i "s/\$DOMAIN/$DOMAIN/g" /root/docker/web/nginx.conf
           sed -i "s/\$DOMAIN/$DOMAIN/g" /root/docker/kickstart/web/nginx.conf
@@ -121,7 +124,6 @@ jobs:
           sudo docker stop $(sudo docker ps -a -q)
           sudo docker container prune -f
           if ${{ github.event.client_payload.service }} == "webapp"; then
-            echo "IMG_NAME=ghcr.io/${{ github.repository_owner }}/${{ github.event.client_payload.service }}" | sudo tee -a /etc/environment
             sudo docker rmi $IMG_NAME
           fi
           sudo docker network prune -f
