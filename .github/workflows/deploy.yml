@@ -16,12 +16,20 @@ jobs:
       with:
         ref: ${{ github.event.client_payload.sha }}
 
+    - name: Set key
+      run: |
+        if [[ "${{ github.event.client_payload.service }}" == "webapp" ]]; then
+          echo "PRESENT_KEY=${{ secrets.WEBAPP_SERVER_KEY }}" >> $GITHUB_ENV
+        elif [[ "${{ github.event.client_payload.service }}" == "cloud" ]]; then
+          echo "PRESENT_KEY=${{ secrets.CLOUD_SERVER_KEY }}" >> $GITHUB_ENV
+        fi
+
     - name: Clean the environment
       uses: appleboy/ssh-action@master
       with:
         host: ${{ github.event.client_payload.server }}
         username: ${{ secrets.SERVER_USERNAME }}
-        key: ${{ github.event.client_payload.key }}
+        key: ${{ env.PRESENT_KEY }}
         script: |
           sudo chown -R ${{ secrets.SERVER_USERNAME }}:${{ secrets.SERVER_USERNAME }} /root
           sudo rm -rf /root/docker
@@ -31,7 +39,7 @@ jobs:
       with:
         host: ${{ github.event.client_payload.server }}
         username: ${{ secrets.SERVER_USERNAME }}
-        key: ${{ github.event.client_payload.key }}
+        key: ${{ env.PRESENT_KEY }}
         source: "."
         target: "/root/docker"
 
@@ -40,7 +48,7 @@ jobs:
       with:
         host: ${{ github.event.client_payload.server }}
         username: ${{ secrets.SERVER_USERNAME }}
-        key: ${{ github.event.client_payload.key }}
+        key: ${{ env.PRESENT_KEY }}
         script: |
           sudo touch /etc/environment
           secrets_array=("CERTBOT_EMAIL" "MYSQL_DATABASE" "MYSQL_HOST" "MYSQL_DATABASE" "MYSQL_USER" "MYSQL_PASSWORD" "POSTGRES_HOST" "POSTGRES_DATABASE" "POSTGRES_HOST" "POSTGRES_DATABASE" "POSTGRES_USER" "POSTGRES_PASSWORD" "NEXTCLOUD_ADMIN_USER" "NEXTCLOUD_ADMIN_PASSWORD" "DOMAIN" "AZURE_STORAGE_ACCOUNT_KEY" "AZURE_STORAGE_ACCOUNT_NAME")
