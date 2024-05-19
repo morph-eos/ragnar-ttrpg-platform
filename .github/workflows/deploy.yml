@@ -56,6 +56,9 @@ jobs:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Test Image pull
+      run: docker pull ghcr.io/${{ github.repository_owner }}/${{ github.event.client_payload.service }}:latest
 
     - name: Actual deploy
       uses: appleboy/ssh-action@master
@@ -115,7 +118,7 @@ jobs:
                 echo "AZURE_STORAGE_ACCOUNT_NAME=${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}" | sudo tee -a /etc/environment
                 ;;
               "IMG_NAME")
-                echo "IMG_NAME=ghcr.io/${{ github.repository_owner }}/${{ github.event.client_payload.service }}" | sudo tee -a /etc/environment
+                echo "IMG_NAME=ghcr.io/${{ github.repository_owner }}/${{ github.event.client_payload.service }}:latest" | sudo tee -a /etc/environment
                 ;;
               *)
                 echo "Unknown secret: ${secret}"
