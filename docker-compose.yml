@@ -1,3 +1,5 @@
+version: "3"
+
 services:
 
   #Web services
@@ -42,3 +44,11 @@ services:
       - MYSQL_PASSWORD=$MYSQL_PASSWORD
       - NEXTCLOUD_ADMIN_USER=$NEXTCLOUD_ADMIN_USER
       - NEXTCLOUD_ADMIN_PASSWORD=$NEXTCLOUD_ADMIN_PASSWORD
+    deploy:
+      resources:
+        limits:
+          cpus: '0.7'
+          memory: 700M
+        reservations:
+          cpus: '0.4'
+          memory: 300M
