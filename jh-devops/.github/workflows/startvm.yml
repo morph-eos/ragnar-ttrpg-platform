@@ -1,0 +1,27 @@
+name: startvm
+
+on:
+    workflow_dispatch:
+    schedule:
+      - cron: '06 00 * * 1-5'
+      - cron: '06 15 * * 1-5'
+
+jobs:
+  startvm:
+    runs-on: ubuntu-latest
+
+    name: startvm
+    steps: 
+
+      - name: Azure Login
+        uses: Azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Azure CLI script
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.30.0
+          inlineScript: |
+            az vm start --resource-group jugglehive --name jugglehive-cloud
+            az vm start --resource-group jugglehive --name jugglehive-webapp
