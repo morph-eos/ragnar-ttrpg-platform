@@ -1,4 +1,4 @@
-version: "3"
+version: "2"
 
 services:
 
@@ -7,6 +7,9 @@ services:
     container_name: nginx
     restart: always
     image: nginx:1.24.0
+    mem_limit: 150m
+    mem_reservation: 128M
+    cpus: 0.2
     ports:
       - "80:80"
       - "443:443"
@@ -28,6 +31,9 @@ services:
   nextcloud:
     container_name: nextcloud
     image: nextcloud:27.1.9
+    mem_limit: 600m
+    mem_reservation: 300M
+    cpus: 0.6
     restart: always
     volumes:
       - ../data/nextcloud:/var/www/html
@@ -44,11 +50,3 @@ services:
       - MYSQL_PASSWORD=$MYSQL_PASSWORD
       - NEXTCLOUD_ADMIN_USER=$NEXTCLOUD_ADMIN_USER
       - NEXTCLOUD_ADMIN_PASSWORD=$NEXTCLOUD_ADMIN_PASSWORD
-    deploy:
-      resources:
-        limits:
-          cpus: '0.7'
-          memory: 700M
-        reservations:
-          cpus: '0.4'
-          memory: 300M
