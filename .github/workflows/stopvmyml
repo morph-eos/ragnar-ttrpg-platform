@@ -1,0 +1,29 @@
+name: stopvm
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '22 00 * * 1-5'
+    - cron: '22 15 * * 1-5'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    name: shutdown
+    steps: 
+
+      - name: Azure Login
+        uses: Azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}  
+
+      - name: Azure CLI script
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.30.0
+          inlineScript: |
+            az vm stop --resource-group jugglehive --name jugglehive-cloud
+            az vm deallocate --resource-group jugglehive --name jugglehive-cloud
+            az vm stop --resource-group jugglehive --name jugglehive-webapp
+            az vm deallocate --resource-group jugglehive --name jugglehive-webapp
