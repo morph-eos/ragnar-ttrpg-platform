@@ -2,19 +2,58 @@ name: stopvm
 
 on:
   schedule:
-    - cron: '00 06 * * *'
+    - cron: '30 05 * * *'
 
 jobs:
-  deploy:
+  
+  backup:
     runs-on: ubuntu-latest
 
-    name: shutdown
+    steps:
+
+      - name: Nextcloud Backup
+        uses: appleboy/ssh-action@master
+        with:
+          host: cloud.${{ secrets.DOMAIN }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_KEY }}
+          script:
+            sudo cd /root/docker
+            sudo docker compose down
+            sudo cd /root/data
+            sudo zip -r ./nextcloud-backup.zip ./nextcloud
+            sudo az storage blob upload \
+            --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }} \
+            --container-name backup \
+            --name nextcloud-backup.zip \
+            --file nextcloud-$(date +"%Y-%m-%d").zip \
+            --sas-token ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY}} \
+            --overwrite 1> /dev/null
+            sudo rm -rf ./nextcloud-backup.zip
+            sudo cd /root/docker
+            sudo docker compose up -d
+
+  cloud-ops:
+    needs: backup
+    runs-on: ubuntu-latest
+
     steps: 
 
       - name: Azure Login
         uses: Azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}  
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      - name: Old Backup Cleanup
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.30.0
+          inlineScript: |
+            az storage blob delete \
+            --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }} \
+            --source backup \
+            --name nextcloud-$(date -d "-4 days" +"%Y-%m-%d").zip \
+            --sas-token ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }} > /dev/null
 
       - name: Azure CLI script
         uses: azure/CLI@v1
