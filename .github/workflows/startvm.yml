@@ -1,10 +1,8 @@
 name: startvm
 
 on:
-    workflow_dispatch:
-    schedule:
-      - cron: '06 00 * * 1-5'
-      - cron: '06 15 * * 1-5'
+  schedule:
+    - cron: '00 22 * * *'
 
 jobs:
   startvm:
