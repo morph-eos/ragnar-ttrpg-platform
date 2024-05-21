@@ -24,3 +24,6 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin 
 
 #Install AZ CLI
 curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+#Install mysql-client
+sudo apt install mysql-client-core-8.0

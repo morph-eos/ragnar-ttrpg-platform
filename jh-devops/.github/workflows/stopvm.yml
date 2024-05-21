@@ -25,11 +25,20 @@ jobs:
             sudo az storage blob upload \
             --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }} \
             --container-name backup \
-            --name nextcloud-backup.zip \
-            --file nextcloud-$(date +"%Y-%m-%d").zip \
+            --name nextcloud-$(date +"%Y-%m-%d").zip \
+            --file nextcloud-backup.zip \
             --sas-token ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY}} \
             --overwrite 1> /dev/null
             sudo rm -rf ./nextcloud-backup.zip
+            mysqldump -h ${{ secrets.MYSQL_HOST }} -u ${{ secrets.MYSQL_USER }} --password=${{secrets. MYSQL_PASSWORD }} ${{ secrets.MYSQL_DATABASE }} > nextcloud-db-backup.sql
+            sudo az storage blob upload \
+            --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }} \
+            --container-name backup \
+            --name nextcloud-db-$(date +"%Y-%m-%d").sql \
+            --file nextcloud-db-backup.sql \
+            --sas-token ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY}} \
+            --overwrite 1> /dev/null
+            sudo rm -rf ./nextcloud-db-backup.sql
             sudo cd /root/docker
             sudo docker compose up -d
 
@@ -53,6 +62,21 @@ jobs:
             --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }} \
             --source backup \
             --name nextcloud-$(date -d "-4 days" +"%Y-%m-%d").zip \
+            --sas-token ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }} > /dev/null
+            az storage blob delete \
+            --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }} \
+            --source backup \
+            --name nextcloud-$(date -d "-5 days" +"%Y-%m-%d").zip \
+            --sas-token ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }} > /dev/null
+            az storage blob delete \
+            --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }} \
+            --source backup \
+            --name nextcloud-db-$(date -d "-4 days" +"%Y-%m-%d").sql \
+            --sas-token ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }} > /dev/null
+            az storage blob delete \
+            --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }} \
+            --source backup \
+            --name nextcloud-db-$(date -d "-5 days" +"%Y-%m-%d").sql \
             --sas-token ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }} > /dev/null
 
       - name: Azure CLI script
