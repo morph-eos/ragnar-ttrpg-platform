@@ -137,6 +137,9 @@ jobs:
             sudo docker stop $(sudo docker ps -a -q)
             sudo docker container prune -f
           fi
+          if [ -d "/root/data/nextcloud" ]; then
+            sudo chown -R www-data:www-data /root/data/nextcloud
+          fi
           for url in $(sudo cat ~/.docker/config.json | jq -r '.auths | keys | .[]'); do sudo docker logout $url; done
           echo "${{ secrets.GITHUB_TOKEN }}" | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin
           cd /root/docker
