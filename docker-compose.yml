@@ -9,7 +9,7 @@ services:
     image: nginx:1.24.0
     mem_limit: 150m
     mem_reservation: 128M
-    cpus: 0.2
+    cpus: 0.15
     ports:
       - "80:80"
       - "443:443"
@@ -33,7 +33,7 @@ services:
     image: nextcloud:27.1.9
     mem_limit: 600m
     mem_reservation: 300M
-    cpus: 0.6
+    cpus: 0.4
     restart: always
     volumes:
       - ../data/nextcloud:/var/www/html
