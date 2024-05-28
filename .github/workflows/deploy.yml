@@ -17,15 +17,18 @@ jobs:
         repository: ${{ github.repository_owner }}/${{ github.event.client_payload.service }} 
         token: ${{ secrets.CONTENTS_PAT }}
     
-    - name: Move original code in a proper directory
+    - name: Save original code in another directory
       run: |
-        cp -rf ./ ../ogrepo
+        cp -rf ./ ../${{ github.event.client_payload.service }}
         rm -rf ./*
-        mv ../ogrepo/* ./
-        ls
       
     - name: Checkout the deployment code
       uses: actions/checkout@v4
+
+    - name: Move original code for deploy
+      run: |
+        mv ../${{ github.event.client_payload.service }}/ ./${{ github.event.client_payload.service }}
+        ls        
 
     - name: Clean the environment
       uses: appleboy/ssh-action@master
@@ -53,13 +56,12 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SERVER_KEY }}
         script: |
-          if [ -f "/root/repo/ogrepo/docker-compose.yml" ]; then
-            sudo mv /root/repo/ogrepo /root/docker
-            sudo rm -rf /root/repo
+          if [ -d "/root/repo/cloud" ]; then
+            sudo mv /root/repo/cloud /root/docker
           else
             sudo mv /root/repo/docker /root/docker
-            sudo rm -rf /root/docker/ogrepo
           fi
+          sudo rm -rf /root/repo
 
     - name: Actual deploy
       uses: appleboy/ssh-action@master
