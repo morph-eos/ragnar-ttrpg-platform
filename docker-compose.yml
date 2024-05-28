@@ -36,6 +36,7 @@ services:
     image: nextcloud:27.1.9
     restart: always
     volumes:
+      - ../data/nextcloud/nextcloud.conf:/etc/apache2/conf-enabled/nextcloud.conf
       - ../data/nextcloud:/var/www/html
       - ../data/certbot/conf:/etc/letsencrypt
       - ../data/certbot/www:/var/www/certbot
@@ -50,6 +51,7 @@ services:
       - MYSQL_PASSWORD=$MYSQL_PASSWORD
       - NEXTCLOUD_ADMIN_USER=$NEXTCLOUD_ADMIN_USER
       - NEXTCLOUD_ADMIN_PASSWORD=$NEXTCLOUD_ADMIN_PASSWORD
+      - PHP_MEMORY_LIMIT=1024M
     deploy:
       resources:
         limits:
