@@ -1,5 +1,8 @@
 package com.jugglehive.backend.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.jugglehive.backend.exception.customExceptions.NoCharactersFoundException;
 import com.jugglehive.backend.model.entity.ttrpg.Chara;
+import com.jugglehive.backend.model.entity.ttrpg.CharacterClasses;
 import com.jugglehive.backend.repository.CharaRepository;
 
 @Service
@@ -86,6 +90,43 @@ public class CharaServiceImpl implements CharaService {
         }
 
         return result;
+    }
+
+
+    //#TODO: gestione errori
+    @Override
+     public Map<String, Integer> calculateCurrentStats(Chara chara) {
+
+
+
+        Map<String, Integer> stats = new HashMap<>();
+
+        ///non vanno moltiplicati per il livello
+        chara.getLvlUpStat().getStats().forEach((key, value) -> stats.merge(key, value * chara.getInfo().getLevel(), Integer::sum));
+
+        chara.getRace().getStats().getStats().forEach((key, value) -> stats.merge(key, value, Integer::sum));
+
+        chara.getClasses().stream()
+                .map(CharacterClasses::getClassEntity)
+                .map(classEntity -> (Map<String, Integer>) classEntity.getStats().getStats())
+                .map(Map::entrySet)
+                .forEach(entrySet -> entrySet.forEach(entry -> stats.merge(entry.getKey(), entry.getValue(), Integer::sum)));
+
+        return stats;
+    }
+
+
+
+      //#TODO: gestione errori
+    @Override
+    public List<String> getClassesNames(Chara chara) {
+        List<String> names = new ArrayList<>();
+
+        for (CharacterClasses characterClasses : chara.getClasses()) {
+            names.add(characterClasses.getClassEntity().getName());
+        }
+
+        return names;
     }
 
 }
