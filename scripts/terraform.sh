@@ -26,4 +26,18 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin 
 curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
 #Install mysql-client
-sudo apt install mysql-client-core-8.0
+sudo apt install -y mysql-client-core-8.0
+
+#Install postgresql
+sudo apt install curl ca-certificates
+sudo install -d /usr/share/postgresql-common/pgdg
+sudo curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc
+sudo sh -c 'echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+sudo apt update
+sudo apt -y install postgresql-16
+
+#Mount Azure File Storage
+sudo apt install cifs-util
+mkdir /root/azurestorage > /dev/null 2>&1
+sudo bash -c 'echo "//$AZURE_STORAGE_ACCOUNT_NAME.file.core.windows.net/general /root/azurestorage cifs nofail,username=$AZURE_STORAGE_ACCOUNT_NAME,password=$AZURE_STORAGE_ACCOUNT_KEY,dir_mode=0755,file_mode=0755,serverino,nosharesock,actimeo=30" >> /etc/fstab'
+sudo mount -t cifs //$AZURE_STORAGE_ACCOUNT_NAME.file.core.windows.net/general /root/azurestorage -o username=$AZURE_STORAGE_ACCOUNT_NAME,password="$AZURE_STORAGE_ACCOUNT_KEY",dir_mode=0755,file_mode=0755,serverino,nosharesock,actimeo=30

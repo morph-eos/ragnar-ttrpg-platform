@@ -100,7 +100,7 @@ jobs:
                 echo "POSTGRES_DATABASE=${{ secrets.POSTGRES_DATABASE }}" | sudo tee -a /etc/environment
                 ;;
               "POSTGRES_USER")
-                echo "POSTGRES_USER=${{ secrets.POSTGRES_DATABASE }}" | sudo tee -a /etc/environment
+                echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" | sudo tee -a /etc/environment
                 ;;
               "POSTGRES_PASSWORD")
                 echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" | sudo tee -a /etc/environment
