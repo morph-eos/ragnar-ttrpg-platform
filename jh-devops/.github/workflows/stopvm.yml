@@ -11,64 +11,40 @@ jobs:
 
     steps:
 
-      - name: Nextcloud Backup
+      - name: Cloud Backup
         uses: appleboy/ssh-action@master
         with:
           host: cloud.${{ secrets.DOMAIN }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_KEY }}
           script: |
+            crontab -l | grep -v '@reboot mv' | crontab -
             cd /root/docker
             sudo docker compose down
             cd /root/data
             sudo chown -R ${{ secrets.SERVER_USERNAME }}:${{ secrets.SERVER_USERNAME }} ./nextcloud
             zip -r ./nextcloud-backup.zip ./nextcloud
-            az storage blob upload \
-            --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }} \
-            --container-name backup \
-            --name nextcloud-$(date +"%Y-%m-%d").zip \
-            --file nextcloud-backup.zip \
-            --sas-token ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY}} \
-            --overwrite 1> /dev/null
+            (crontab -l 2>/dev/null; echo "@reboot mv -f /root/data/nextcloud-backup.zip /root/azurestorage/backup/nextcloud-$(date +"%Y-%m-%d").zip") | crontab -
             sudo chown -R www-data:www-data ./nextcloud
-            rm -rf ./nextcloud-backup.zip
-            mysqldump -h ${{ secrets.MYSQL_HOST }} -u ${{ secrets.MYSQL_USER }} --password=${{secrets. MYSQL_PASSWORD }} ${{ secrets.MYSQL_DATABASE }} > nextcloud-db-backup.sql
-            az storage blob upload \
-            --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }} \
-            --container-name backup \
-            --name nextcloud-db-$(date +"%Y-%m-%d").sql \
-            --file nextcloud-db-backup.sql \
-            --sas-token ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY}} \
-            --overwrite 1> /dev/null
-            rm -rf ./nextcloud-db-backup.sql
-        
-      - name: Old Backup Cleanup
+            mysqldump -h ${{ secrets.MYSQL_HOST }} -u ${{ secrets.MYSQL_USER }} --password=${{secrets.MYSQL_PASSWORD }} ${{ secrets.MYSQL_DATABASE }} > nextcloud-db-backup.sql
+            (crontab -l 2>/dev/null; echo "@reboot mv -f /root/data/nextcloud-db-backup.sql /root/azurestorage/backup/nextcloud-db-$(date +"%Y-%m-%d").sql") | crontab -
+            cd /root/azurestorage/backup
+            rm -f nextcloud-$(date +"%Y-%m-%d" -d "-4 days").zip nextcloud-$(date +"%Y-%m-%d" -d "-5 days").zip nextcloud-db-$(date +"%Y-%m-%d" -d "-4 days").sql nextcloud-db-$(date +"%Y-%m-%d" -d "-5 days").sql
+      
+      - name: Webapp Backup
         uses: appleboy/ssh-action@master
         with:
-          host: cloud.${{ secrets.DOMAIN }}
+          host: ${{ secrets.DOMAIN }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_KEY }}
           script: |
-            az storage blob delete \
-            --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }} \
-            --container-name backup \
-            --name nextcloud-$(date +"%Y-%m-%d" -d "-4 days").zip \
-            --sas-token ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }} || true
-            az storage blob delete \
-            --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }} \
-            --container-name backup \
-            --name nextcloud-$(date +"%Y-%m-%d" -d "-5 days").zip \
-            --sas-token ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }} || true
-            az storage blob delete \
-            --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }} \
-            --container-name backup \
-            --name nextcloud-db-$(date +"%Y-%m-%d" -d "-4 days").sql \
-            --sas-token ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }} || true
-            az storage blob delete \
-            --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }} \
-            --container-name backup \
-            --name nextcloud-db-$(date +"%Y-%m-%d" -d "-5 days").sql \
-            --sas-token ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }} || true
+            crontab -l | grep -v '@reboot mv' | crontab -
+            cd /root/
+            pg_dump --dbname=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD}}@${{ secrets.POSTGRES_HOST }}:5432/${{ secrets.POSTGRES_DATABASE }} > postgres-backup.sql
+            (crontab -l 2>/dev/null; echo "@reboot mv -f /root/postgres-backup.sql /root/azurestorage/backup/postgres-$(date +"%Y-%m-%d").sql") | crontab -
+            cd /root/azurestorage/backup
+            rm -f postgres-$(date +"%Y-%m-%d" -d "-4 days").sql postgres-$(date +"%Y-%m-%d" -d "-5 days").sql
+            
 
   stopvm:
     needs: backup
