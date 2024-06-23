@@ -1,5 +1,6 @@
 package com.jugglehive.backend.model.entity.ttrpg;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.jugglehive.backend.model.entity.login.User;
@@ -11,9 +12,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -54,11 +54,8 @@ public class Chara {
   @JoinColumn(name = "lvl_up_stat_id", nullable = false)
   private BaseStats lvlUpStat;
 
-  @ManyToMany(fetch = FetchType.EAGER)
-  @JoinTable(name = "character_classes",
-      joinColumns = @JoinColumn(name = "character_id", nullable = false),
-      inverseJoinColumns = @JoinColumn(name = "class_id", nullable = false))
-  private List<ClassEntity> classes;
+  @OneToMany(mappedBy = "chara")
+  private List<CharacterClasses> classes = new ArrayList<>();
 
-  // Getters and Setters
+
 }

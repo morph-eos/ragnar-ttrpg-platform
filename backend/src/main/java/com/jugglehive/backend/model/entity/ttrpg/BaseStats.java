@@ -1,5 +1,8 @@
 package com.jugglehive.backend.model.entity.ttrpg;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -38,4 +41,19 @@ public class BaseStats {
 
   @Column(name = "speed")
   private Integer speed;
+
+  public Map<String, Integer> getStats() {
+
+    Map<String, Integer> stats = new HashMap<>();
+
+    stats.put("vitality", vitality);
+    stats.put("strength", strength);
+    stats.put("dexterity", dexterity);
+    stats.put("arcane", arcane);
+    stats.put("instinct", instinct);
+    stats.put("charisma", charisma);
+    stats.put("speed", speed);
+    
+    return stats;
+  }
 }
