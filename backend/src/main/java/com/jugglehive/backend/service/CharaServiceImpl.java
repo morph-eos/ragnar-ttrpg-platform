@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.jugglehive.backend.exception.customExceptions.NoCharactersFoundException;
+import com.jugglehive.backend.model.dto.GetCharaLightDTO;
 import com.jugglehive.backend.model.entity.ttrpg.Chara;
 import com.jugglehive.backend.model.entity.ttrpg.CharacterClasses;
 import com.jugglehive.backend.repository.CharaRepository;
@@ -93,16 +94,56 @@ public class CharaServiceImpl implements CharaService {
     }
 
 
-    //#TODO: gestione errori
+    public GetCharaLightDTO mapCharaToGetCharaLightDTO(Chara chara){
+
+        GetCharaLightDTO result = new GetCharaLightDTO();
+
+        if(chara == null){
+            throw new NoCharactersFoundException("No characters found for id: ");
+
+        }
+
+        if(chara.getId() == null){
+
+            throw new NoCharactersFoundException("No characters found for id: " );
+
+        }
+
+
+        result.setId(chara.getId());
+        result.setUserId(chara.getUser().getId());
+        result.setName(chara.getName());
+        result.setAge(chara.getAge());
+        result.setRegion(chara.getRegion().getName());
+        result.setCurrentStats(calculateCurrentStats(chara));
+        result.setClasses(getClassesNames(chara));
+        result.setRace(chara.getRace().getName());
+        result.setLevel(chara.getInfo().getLevel());
+        result.setUrlImage("https://media-assets.wired.it/photos/638a19c0ddcebfa81a71fbad/16:9/w_1280,c_limit/Troll.jpg");
+
+
+        return result;
+
+    }
+
     @Override
      public Map<String, Integer> calculateCurrentStats(Chara chara) {
+
+        if(chara == null) {
+            throw new IllegalArgumentException("Chara is null");
+        }
+
+        if(chara.getId() == null) {
+            throw new IllegalArgumentException("Chara id is null");
+        }
+
+        
 
 
 
         Map<String, Integer> stats = new HashMap<>();
 
-        ///non vanno moltiplicati per il livello
-        chara.getLvlUpStat().getStats().forEach((key, value) -> stats.merge(key, value * chara.getInfo().getLevel(), Integer::sum));
+        chara.getLvlUpStat().getStats().forEach((key, value) -> stats.merge(key, value, Integer::sum));
 
         chara.getRace().getStats().getStats().forEach((key, value) -> stats.merge(key, value, Integer::sum));
 
@@ -117,9 +158,16 @@ public class CharaServiceImpl implements CharaService {
 
 
 
-      //#TODO: gestione errori
     @Override
     public List<String> getClassesNames(Chara chara) {
+        
+        if(chara == null) {
+            throw new IllegalArgumentException("Chara is null");
+        }
+
+        if(chara.getId() == null) {
+            throw new IllegalArgumentException("Chara id is null");
+        }
         List<String> names = new ArrayList<>();
 
         for (CharacterClasses characterClasses : chara.getClasses()) {
