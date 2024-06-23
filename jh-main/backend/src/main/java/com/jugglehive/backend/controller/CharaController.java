@@ -45,7 +45,7 @@ public class CharaController {
         Chara chara = charaService.getCharaById(charaId);
 
         // Return a character DTO mapped from the character
-        result.mapCharaToDTO(chara);
+        result = charaService.mapCharaToGetCharaLightDTO(chara);
 
         return result;
 
