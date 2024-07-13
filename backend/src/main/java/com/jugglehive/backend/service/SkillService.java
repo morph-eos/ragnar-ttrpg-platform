@@ -8,5 +8,5 @@ public interface SkillService {
 
     Skill getSkillById(Long skillId) throws NoSkillsFoundException, Exception;
 
-    GetSkillByIdDTO mapSkillToGetSkillByIdDTO(Skill skill);
+    GetSkillByIdDTO mapSkillToGetSkillByIdDTO(Skill skill) throws NoSkillsFoundException;
 }

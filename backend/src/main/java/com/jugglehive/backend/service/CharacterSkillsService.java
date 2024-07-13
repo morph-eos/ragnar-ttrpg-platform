@@ -10,5 +10,5 @@ public interface CharacterSkillsService {
 
     List<CharachterSkills> getCharaSkillsByCharacterId(Long charaId) throws NoCharacterSkillsFoundException, Exception;
 
-    GetCharaSkillsByCharacterIdDTO mapCharacterSkillsToGetCharaSkillsByCharacterIdDTO(List<CharachterSkills> characterSkills);
+    GetCharaSkillsByCharacterIdDTO mapCharacterSkillsToGetCharaSkillsByCharacterIdDTO(List<CharachterSkills> characterSkills) throws NoCharacterSkillsFoundException;
 }
