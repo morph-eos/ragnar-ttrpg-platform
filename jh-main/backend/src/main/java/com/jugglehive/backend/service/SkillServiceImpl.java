@@ -34,8 +34,8 @@ public class SkillServiceImpl implements SkillService{
     }
 
     @Override
-    public GetSkillByIdDTO mapSkillToGetSkillByIdDTO(Skill skill) {
-
+    public GetSkillByIdDTO mapSkillToGetSkillByIdDTO(Skill skill) throws NoSkillsFoundException {
+        
         GetSkillByIdDTO result = new GetSkillByIdDTO();
 
         if(skill == null){

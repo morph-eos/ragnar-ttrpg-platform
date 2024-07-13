@@ -41,7 +41,7 @@ public class CharacterSkillsServiceImpl implements CharacterSkillsService{
 
     @Override
     public GetCharaSkillsByCharacterIdDTO mapCharacterSkillsToGetCharaSkillsByCharacterIdDTO(
-            List<CharachterSkills> characterSkillsList) {
+            List<CharachterSkills> characterSkillsList) throws NoCharacterSkillsFoundException {
         
         GetCharaSkillsByCharacterIdDTO result = new GetCharaSkillsByCharacterIdDTO();
 
