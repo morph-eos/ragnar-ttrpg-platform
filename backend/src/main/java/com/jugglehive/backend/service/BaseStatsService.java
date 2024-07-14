@@ -1,12 +1,15 @@
 package com.jugglehive.backend.service;
 
+import java.util.List;
+
 import com.jugglehive.backend.exception.customExceptions.NoBaseStatsFoundException;
-import com.jugglehive.backend.model.dto.GetBaseStatsByIdDTO;
+import com.jugglehive.backend.model.dto.GetBaseStatsByCharaIdDTO;
 import com.jugglehive.backend.model.entity.ttrpg.BaseStats;
+import com.jugglehive.backend.model.entity.ttrpg.Chara;
 
 public interface BaseStatsService {
 
-    BaseStats getBaseStatsById(Long id) throws NoBaseStatsFoundException, Exception;
+    List<BaseStats> getBaseStatsByCharaId(Long id) throws NoBaseStatsFoundException, Exception;
 
-    GetBaseStatsByIdDTO mapBaseStatsToGetBaseStatsById(BaseStats baseStats) throws NoBaseStatsFoundException;
+    GetBaseStatsByCharaIdDTO mapBaseStatsToGetBaseStatsByCharaIdDTO(Chara character, BaseStats baseStats) throws NoBaseStatsFoundException;
 }
