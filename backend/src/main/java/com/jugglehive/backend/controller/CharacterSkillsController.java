@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jugglehive.backend.exception.customExceptions.NoCharacterSkillsFoundException;
 import com.jugglehive.backend.model.dto.GetCharaSkillsByCharacterIdDTO;
-import com.jugglehive.backend.model.entity.ttrpg.CharachterSkills;
+import com.jugglehive.backend.model.entity.ttrpg.CharacterSkills;
 import com.jugglehive.backend.service.CharacterSkillsService;
 
 @RestController
@@ -24,7 +24,7 @@ public class CharacterSkillsController {
     @GetMapping("/charaId/{charaId}")
     public GetCharaSkillsByCharacterIdDTO getCharaSkillsByCharacterId(@PathVariable Long charaId) throws NoCharacterSkillsFoundException, Exception {
 
-        List<CharachterSkills> characterSkillList = characterSkillsService.getCharaSkillsByCharacterId(charaId);
+        List<CharacterSkills> characterSkillList = characterSkillsService.getCharaSkillsByCharacterId(charaId);
 
         // Return a character skills DTO mapped from the character skills
         GetCharaSkillsByCharacterIdDTO result = characterSkillsService.mapCharacterSkillsToGetCharaSkillsByCharacterIdDTO(characterSkillList);

@@ -15,7 +15,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(schema = "ttrpg")
-public class CharachterSkills {
+public class CharacterSkills {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

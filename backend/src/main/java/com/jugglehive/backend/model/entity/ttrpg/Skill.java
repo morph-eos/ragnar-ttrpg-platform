@@ -50,7 +50,7 @@ public class Skill {
     @JoinColumn(name = "skill_family_id", nullable = false)
     private SkillFamily skillFamily;
 
-    @Column(name = "skil_family_rank", nullable = false)
+    @Column(name = "skill_family_rank", nullable = false)
     private int skillFamilyRank;
 
     @ManyToMany(mappedBy = "skills", fetch = FetchType.LAZY)

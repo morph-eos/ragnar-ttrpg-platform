@@ -10,7 +10,7 @@ import com.jugglehive.backend.exception.customExceptions.NoCharacterSkillsFoundE
 import com.jugglehive.backend.exception.customExceptions.NoSkillsFoundException;
 import com.jugglehive.backend.model.dto.GetCharaSkillsByCharacterIdDTO;
 import com.jugglehive.backend.model.dto.GetSkillUsesDTO;
-import com.jugglehive.backend.model.entity.ttrpg.CharachterSkills;
+import com.jugglehive.backend.model.entity.ttrpg.CharacterSkills;
 import com.jugglehive.backend.repository.CharacterSkillsRepository;
 
 @Service
@@ -20,7 +20,7 @@ public class CharacterSkillsServiceImpl implements CharacterSkillsService{
     private CharacterSkillsRepository characterSkillsRepository;
 
     @Override
-    public List<CharachterSkills> getCharaSkillsByCharacterId(Long charaId)
+    public List<CharacterSkills> getCharaSkillsByCharacterId(Long charaId)
             throws NoCharacterSkillsFoundException, Exception {
         
         if (charaId == null) {
@@ -28,7 +28,7 @@ public class CharacterSkillsServiceImpl implements CharacterSkillsService{
             throw new IllegalArgumentException("Id is null");
         }
 
-        List<CharachterSkills> result = characterSkillsRepository.findAllByCharacterId(charaId);
+        List<CharacterSkills> result = characterSkillsRepository.findAllByCharacterId(charaId);
 
         if (result.isEmpty()) {
 
@@ -41,7 +41,7 @@ public class CharacterSkillsServiceImpl implements CharacterSkillsService{
 
     @Override
     public GetCharaSkillsByCharacterIdDTO mapCharacterSkillsToGetCharaSkillsByCharacterIdDTO(
-            List<CharachterSkills> characterSkillsList) throws NoCharacterSkillsFoundException {
+            List<CharacterSkills> characterSkillsList) throws NoCharacterSkillsFoundException {
         
         GetCharaSkillsByCharacterIdDTO result = new GetCharaSkillsByCharacterIdDTO();
 
@@ -54,7 +54,7 @@ public class CharacterSkillsServiceImpl implements CharacterSkillsService{
         
         List<GetSkillUsesDTO> skillUsesList = new ArrayList<GetSkillUsesDTO>();
 
-        for (CharachterSkills characterSkills : characterSkillsList) {
+        for (CharacterSkills characterSkills : characterSkillsList) {
             
             if(characterSkills.getId() == null){
                 throw new NoSkillsFoundException("No character skills found for id: ");
