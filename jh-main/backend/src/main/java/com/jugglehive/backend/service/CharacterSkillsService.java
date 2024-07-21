@@ -4,11 +4,11 @@ import java.util.List;
 
 import com.jugglehive.backend.exception.customExceptions.NoCharacterSkillsFoundException;
 import com.jugglehive.backend.model.dto.GetCharaSkillsByCharacterIdDTO;
-import com.jugglehive.backend.model.entity.ttrpg.CharachterSkills;
+import com.jugglehive.backend.model.entity.ttrpg.CharacterSkills;
 
 public interface CharacterSkillsService {
 
-    List<CharachterSkills> getCharaSkillsByCharacterId(Long charaId) throws NoCharacterSkillsFoundException, Exception;
+    List<CharacterSkills> getCharaSkillsByCharacterId(Long charaId) throws NoCharacterSkillsFoundException, Exception;
 
-    GetCharaSkillsByCharacterIdDTO mapCharacterSkillsToGetCharaSkillsByCharacterIdDTO(List<CharachterSkills> characterSkills) throws NoCharacterSkillsFoundException;
+    GetCharaSkillsByCharacterIdDTO mapCharacterSkillsToGetCharaSkillsByCharacterIdDTO(List<CharacterSkills> characterSkills) throws NoCharacterSkillsFoundException;
 }

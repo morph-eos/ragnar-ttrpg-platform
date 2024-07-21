@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.jugglehive.backend.model.entity.ttrpg.CharachterSkills;
+import com.jugglehive.backend.model.entity.ttrpg.CharacterSkills;
 
-public interface CharacterSkillsRepository extends JpaRepository<CharachterSkills, Long> {
+public interface CharacterSkillsRepository extends JpaRepository<CharacterSkills, Long> {
 
-    List<CharachterSkills> findAllByCharacterId(Long charaId);
+    List<CharacterSkills> findAllByCharacterId(Long charaId);
 }

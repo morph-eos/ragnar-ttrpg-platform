@@ -1,10 +1,10 @@
 package com.jugglehive.backend.service;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.jugglehive.backend.exception.customExceptions.NoBaseStatsFoundException;
 import com.jugglehive.backend.exception.customExceptions.NoCharactersFoundException;
@@ -13,22 +13,23 @@ import com.jugglehive.backend.model.entity.ttrpg.BaseStats;
 import com.jugglehive.backend.model.entity.ttrpg.Chara;
 import com.jugglehive.backend.repository.BaseStatsRepository;
 
+@Service
 public class BaseStatsServiceImpl implements BaseStatsService {
 
     @Autowired
     private BaseStatsRepository baseStatsRepository;
 
     @Override
-    public List<BaseStats> getBaseStatsByCharaId(Long id) throws NoBaseStatsFoundException, Exception {
+    public BaseStats getBaseStatsByCharaId(Long id) throws NoBaseStatsFoundException, Exception {
         
         if (id == null) {
 
             throw new IllegalArgumentException("Id is null");
         }
 
-        List<BaseStats> result = null;
+        BaseStats result = null;
 
-        result = baseStatsRepository.findAllByCharacterId(id);
+        result = baseStatsRepository.findBaseStatsByCharacterId(id);
 
         if (result == null) {
 
@@ -40,20 +41,9 @@ public class BaseStatsServiceImpl implements BaseStatsService {
     }
 
     @Override
-    public GetBaseStatsByCharaIdDTO mapBaseStatsToGetBaseStatsByCharaIdDTO(Chara character, BaseStats baseStats) throws NoBaseStatsFoundException {
+    public GetBaseStatsByCharaIdDTO mapBaseStatsToGetBaseStatsByCharaIdDTO(Chara character) throws NoBaseStatsFoundException, NoCharactersFoundException {
         
         GetBaseStatsByCharaIdDTO result = new GetBaseStatsByCharaIdDTO();
-
-        if(baseStats == null){
-            throw new NoBaseStatsFoundException("No baseStats found");
-
-        }
-
-        if(baseStats.getId() == null){
-
-            throw new NoBaseStatsFoundException("No baseStats found" );
-
-        }
 
         if(character == null){
             throw new NoCharactersFoundException("No character found");
@@ -63,14 +53,22 @@ public class BaseStatsServiceImpl implements BaseStatsService {
             throw new NoCharactersFoundException("No character found");
         }
 
+        if(character.getLvlUpStat() == null){
+            throw new NoBaseStatsFoundException("No basestats found");
+        }
+
+        if(character.getLvlUpStat().getId() == null) {
+            throw new NoBaseStatsFoundException("No basestats found");
+        }
+
         Map<String, Integer> baseStatsMap = new HashMap<String, Integer>();
-        baseStatsMap.put("Vitality", baseStats.getVitality());
-        baseStatsMap.put("Dexterity", baseStats.getDexterity());
-        baseStatsMap.put("Arcane", baseStats.getArcane());
-        baseStatsMap.put("Charisma", baseStats.getCharisma());
-        baseStatsMap.put("Instinct", baseStats.getInstinct());
-        baseStatsMap.put("Speed", baseStats.getSpeed());
-        baseStatsMap.put("Strength", baseStats.getStrength());
+        baseStatsMap.put("Vitality", character.getLvlUpStat().getVitality());
+        baseStatsMap.put("Dexterity", character.getLvlUpStat().getDexterity());
+        baseStatsMap.put("Arcane", character.getLvlUpStat().getArcane());
+        baseStatsMap.put("Charisma", character.getLvlUpStat().getCharisma());
+        baseStatsMap.put("Instinct", character.getLvlUpStat().getInstinct());
+        baseStatsMap.put("Speed", character.getLvlUpStat().getSpeed());
+        baseStatsMap.put("Strength", character.getLvlUpStat().getStrength());
 
         result.setCharaId(character.getId());
         result.setCharaName(character.getName());
