@@ -62,7 +62,7 @@ public class CharacterSkillsServiceImpl implements CharacterSkillsService{
             
             GetSkillUsesDTO skillUses = new GetSkillUsesDTO();
             skillUses.setId(characterSkills.getId());
-            skillUses.setName(null); //TODO
+            skillUses.setName(characterSkills.getUnlockedSkill().getName());
             skillUses.setStatus(characterSkills.getStatus());
             skillUses.setTotalUses(characterSkills.getTotalUses());
             skillUses.setTempUses(characterSkills.getTempUses());
