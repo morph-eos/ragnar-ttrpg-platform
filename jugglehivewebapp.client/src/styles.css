@@ -1,0 +1,22 @@
+/* Custom Palette */
+:root {
+    --purple: #54267e;
+    --dark-purple: #190b26;
+    --yellow: #f9c214;
+    --grey: #1e1e1e;
+}
+
+/* Tailwind CSS Palette */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Important Stuff*/
+html, body {
+    background-color: black;
+    color: white;
+    font-family: 'Archivo';
+}
