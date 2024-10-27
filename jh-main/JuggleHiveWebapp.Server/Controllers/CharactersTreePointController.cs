@@ -1,24 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using JuggleHiveWebapp.Server.Models;
+using JuggleHiveWebapp.Server.Services.Interfaces;
 
 namespace JuggleHiveWebapp.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CharactersTreePointController(PostgresContext context) : ControllerBase
+    public class CharactersTreePointController(ICharactersTreePointService charactersTreePointService) : ControllerBase
     {
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CharactersTreePoint>>> GetCharactersTreePoints()
         {
-            return await context.CharactersTreePoints.ToListAsync();
+            return Ok(await charactersTreePointService.GetAllCharactersTreePointsAsync());
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<CharactersTreePoint>> GetCharactersTreePoint(long id)
+        public async Task<ActionResult<CharactersTreePoint?>> GetCharactersTreePoint(long id)
         {
-            var charactersTreePoint = await context.CharactersTreePoints.FindAsync(id);
+            var charactersTreePoint = await charactersTreePointService.GetCharactersTreePointByIdAsync(id);
 
             if (charactersTreePoint == null)
             {
@@ -36,54 +36,22 @@ namespace JuggleHiveWebapp.Server.Controllers
                 return BadRequest();
             }
 
-            context.Entry(charactersTreePoint).State = EntityState.Modified;
-
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CharactersTreePointExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await charactersTreePointService.UpdateCharactersTreePointAsync(charactersTreePoint);
             return NoContent();
         }
 
         [HttpPost]
         public async Task<ActionResult<CharactersTreePoint>> PostCharactersTreePoint(CharactersTreePoint charactersTreePoint)
         {
-            context.CharactersTreePoints.Add(charactersTreePoint);
-            await context.SaveChangesAsync();
-
-            return CreatedAtAction("GetCharactersTreePoint", new { id = charactersTreePoint.Id }, charactersTreePoint);
+            await charactersTreePointService.AddCharactersTreePointAsync(charactersTreePoint);
+            return CreatedAtAction(nameof(GetCharactersTreePoint), new { id = charactersTreePoint.Id }, charactersTreePoint);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCharactersTreePoint(long id)
         {
-            var charactersTreePoint = await context.CharactersTreePoints.FindAsync(id);
-            if (charactersTreePoint == null)
-            {
-                return NotFound();
-            }
-
-            context.CharactersTreePoints.Remove(charactersTreePoint);
-            await context.SaveChangesAsync();
-
+            await charactersTreePointService.DeleteCharactersTreePointAsync(id);
             return NoContent();
-        }
-
-        private bool CharactersTreePointExists(long id)
-        {
-            return context.CharactersTreePoints.Any(e => e.Id == id);
         }
     }
 }

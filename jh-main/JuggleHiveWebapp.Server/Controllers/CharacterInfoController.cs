@@ -1,24 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using JuggleHiveWebapp.Server.Models;
+using JuggleHiveWebapp.Server.Services.Interfaces;
 
 namespace JuggleHiveWebapp.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CharacterInfoController(PostgresContext context) : ControllerBase
+    public class CharacterInfoController(ICharacterInfoService characterInfoService) : ControllerBase
     {
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CharacterInfo>>> GetCharacterInfos()
         {
-            return await context.CharacterInfos.ToListAsync();
+            return Ok(await characterInfoService.GetAllCharacterInfosAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<CharacterInfo>> GetCharacterInfo(long id)
         {
-            var characterInfo = await context.CharacterInfos.FindAsync(id);
+            var characterInfo = await characterInfoService.GetCharacterInfoByIdAsync(id);
 
             if (characterInfo == null)
             {
@@ -36,23 +36,7 @@ namespace JuggleHiveWebapp.Server.Controllers
                 return BadRequest();
             }
 
-            context.Entry(characterInfo).State = EntityState.Modified;
-
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CharacterInfoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await characterInfoService.UpdateCharacterInfoAsync(characterInfo);
 
             return NoContent();
         }
@@ -60,30 +44,15 @@ namespace JuggleHiveWebapp.Server.Controllers
         [HttpPost]
         public async Task<ActionResult<CharacterInfo>> PostCharacterInfo(CharacterInfo characterInfo)
         {
-            context.CharacterInfos.Add(characterInfo);
-            await context.SaveChangesAsync();
-
-            return CreatedAtAction("GetCharacterInfo", new { id = characterInfo.Id }, characterInfo);
+            await characterInfoService.AddCharacterInfoAsync(characterInfo);
+            return CreatedAtAction(nameof(GetCharacterInfo), new { id = characterInfo.Id }, characterInfo);
         }
 
-        [HttpDelete("{id}")]
+    [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCharacterInfo(long id)
         {
-            var characterInfo = await context.CharacterInfos.FindAsync(id);
-            if (characterInfo == null)
-            {
-                return NotFound();
-            }
-
-            context.CharacterInfos.Remove(characterInfo);
-            await context.SaveChangesAsync();
-
+            await characterInfoService.DeleteCharacterInfoAsync(id);
             return NoContent();
-        }
-
-        private bool CharacterInfoExists(long id)
-        {
-            return context.CharacterInfos.Any(e => e.Id == id);
         }
     }
 }

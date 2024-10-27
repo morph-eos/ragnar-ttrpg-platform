@@ -1,24 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using JuggleHiveWebapp.Server.Models;
+using JuggleHiveWebapp.Server.Services.Interfaces;
 
 namespace JuggleHiveWebapp.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CharacterSkillController(PostgresContext context) : ControllerBase
+    public class CharacterSkillController(ICharacterSkillService characterSkillService) : ControllerBase
     {
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CharacterSkill>>> GetCharacterSkills()
         {
-            return await context.CharacterSkills.ToListAsync();
+            return Ok(await characterSkillService.GetAllCharacterSkillsAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<CharacterSkill>> GetCharacterSkill(long id)
         {
-            var characterSkill = await context.CharacterSkills.FindAsync(id);
+            var characterSkill = await characterSkillService.GetCharacterSkillByIdAsync(id);
 
             if (characterSkill == null)
             {
@@ -36,54 +36,22 @@ namespace JuggleHiveWebapp.Server.Controllers
                 return BadRequest();
             }
 
-            context.Entry(characterSkill).State = EntityState.Modified;
-
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CharacterSkillExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await characterSkillService.UpdateCharacterSkillAsync(characterSkill);
             return NoContent();
         }
 
         [HttpPost]
         public async Task<ActionResult<CharacterSkill>> PostCharacterSkill(CharacterSkill characterSkill)
         {
-            context.CharacterSkills.Add(characterSkill);
-            await context.SaveChangesAsync();
-
-            return CreatedAtAction("GetCharacterSkill", new { id = characterSkill.Id }, characterSkill);
+            await characterSkillService.AddCharacterSkillAsync(characterSkill);
+            return CreatedAtAction(nameof(GetCharacterSkill), new { id = characterSkill.Id }, characterSkill);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCharacterSkill(long id)
         {
-            var characterSkill = await context.CharacterSkills.FindAsync(id);
-            if (characterSkill == null)
-            {
-                return NotFound();
-            }
-
-            context.CharacterSkills.Remove(characterSkill);
-            await context.SaveChangesAsync();
-
+            await characterSkillService.DeleteCharacterSkillAsync(id);
             return NoContent();
-        }
-
-        private bool CharacterSkillExists(long id)
-        {
-            return context.CharacterSkills.Any(e => e.Id == id);
         }
     }
 }

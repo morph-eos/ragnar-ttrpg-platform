@@ -1,24 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using JuggleHiveWebapp.Server.Models;
+using JuggleHiveWebapp.Server.Services.Interfaces;
 
 namespace JuggleHiveWebapp.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ClassController(PostgresContext context) : ControllerBase
+    public class ClassController(IClassService classService) : ControllerBase
     {
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Class>>> GetClasses()
         {
-            return await context.Classes.ToListAsync();
+            return Ok(await classService.GetAllClassesAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Class>> GetClass(long id)
         {
-            var @class = await context.Classes.FindAsync(id);
+            var @class = await classService.GetClassByIdAsync(id);
 
             if (@class == null)
             {
@@ -36,54 +36,22 @@ namespace JuggleHiveWebapp.Server.Controllers
                 return BadRequest();
             }
 
-            context.Entry(@class).State = EntityState.Modified;
-
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ClassExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await classService.UpdateClassAsync(@class);
             return NoContent();
         }
 
         [HttpPost]
         public async Task<ActionResult<Class>> PostClass(Class @class)
         {
-            context.Classes.Add(@class);
-            await context.SaveChangesAsync();
-
-            return CreatedAtAction("GetClass", new { id = @class.Id }, @class);
+            await classService.AddClassAsync(@class);
+            return CreatedAtAction(nameof(GetClass), new { id = @class.Id }, @class);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteClass(long id)
         {
-            var @class = await context.Classes.FindAsync(id);
-            if (@class == null)
-            {
-                return NotFound();
-            }
-
-            context.Classes.Remove(@class);
-            await context.SaveChangesAsync();
-
+            await classService.DeleteClassAsync(id);
             return NoContent();
-        }
-
-        private bool ClassExists(long id)
-        {
-            return context.Classes.Any(e => e.Id == id);
         }
     }
 }

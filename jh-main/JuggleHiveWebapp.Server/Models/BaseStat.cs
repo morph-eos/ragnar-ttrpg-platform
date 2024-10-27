@@ -18,9 +18,9 @@ public partial class BaseStat
 
     public int? Speed { get; set; }
 
-    public virtual ICollection<Chara> Charas { get; set; } = new List<Chara>();
+    public virtual ICollection<Chara> Charas { get; set; } = [];
 
-    public virtual ICollection<Class> Classes { get; set; } = new List<Class>();
+    public virtual ICollection<Class> Classes { get; set; } = [];
 
-    public virtual ICollection<Race> Races { get; set; } = new List<Race>();
+    public virtual ICollection<Race> Races { get; set; } = [];
 }

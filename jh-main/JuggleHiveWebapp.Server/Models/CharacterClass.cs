@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace JuggleHiveWebapp.Server.Models;
+﻿namespace JuggleHiveWebapp.Server.Models;
 
 public partial class CharacterClass
 {
