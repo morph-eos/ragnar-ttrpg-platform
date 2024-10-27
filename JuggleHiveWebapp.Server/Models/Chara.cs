@@ -18,15 +18,15 @@ public partial class Chara
 
     public long LvlUpStatId { get; set; }
 
-    public virtual ICollection<CharacterClass> CharacterClasses { get; set; } = new List<CharacterClass>();
+    public virtual ICollection<CharacterClass> CharacterClasses { get; set; } = [];
 
-    public virtual ICollection<CharacterSkill> CharacterSkills { get; set; } = new List<CharacterSkill>();
+    public virtual ICollection<CharacterSkill> CharacterSkills { get; set; } = [];
 
-    public virtual ICollection<CharactersTreePoint> CharactersTreePoints { get; set; } = new List<CharactersTreePoint>();
+    public virtual ICollection<CharactersTreePoint> CharactersTreePoints { get; set; } = [];
 
     public virtual CharacterInfo Info { get; set; } = null!;
 
-    public virtual ICollection<Inventory> Inventories { get; set; } = new List<Inventory>();
+    public virtual ICollection<Inventory> Inventories { get; set; } = [];
 
     public virtual BaseStat LvlUpStat { get; set; } = null!;
 

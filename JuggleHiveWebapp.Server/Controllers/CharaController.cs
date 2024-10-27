@@ -1,24 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using JuggleHiveWebapp.Server.Models;
+using JuggleHiveWebapp.Server.Services.Interfaces;
 
 namespace JuggleHiveWebapp.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class CharaController(PostgresContext context) : ControllerBase
+    public class CharaController(ICharaService charaService) : ControllerBase
     {
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Chara>>> GetCharas()
         {
-            return await context.Charas.ToListAsync();
+            return Ok(await charaService.GetAllCharasAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Chara>> GetChara(long id)
         {
-            var chara = await context.Charas.FindAsync(id);
+            var chara = await charaService.GetCharaByIdAsync(id);
 
             if (chara == null)
             {
@@ -36,54 +36,22 @@ namespace JuggleHiveWebapp.Server.Controllers
                 return BadRequest();
             }
 
-            context.Entry(chara).State = EntityState.Modified;
-
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CharaExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await charaService.UpdateCharaAsync(chara);
             return NoContent();
         }
 
         [HttpPost]
         public async Task<ActionResult<Chara>> PostChara(Chara chara)
         {
-            context.Charas.Add(chara);
-            await context.SaveChangesAsync();
-
-            return CreatedAtAction("GetChara", new { id = chara.Id }, chara);
+            await charaService.AddCharaAsync(chara);
+            return CreatedAtAction(nameof(GetChara), new { id = chara.Id }, chara);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteChara(long id)
         {
-            var chara = await context.Charas.FindAsync(id);
-            if (chara == null)
-            {
-                return NotFound();
-            }
-
-            context.Charas.Remove(chara);
-            await context.SaveChangesAsync();
-
+            await charaService.DeleteCharaAsync(id);
             return NoContent();
-        }
-
-        private bool CharaExists(long id)
-        {
-            return context.Charas.Any(e => e.Id == id);
         }
     }
 }

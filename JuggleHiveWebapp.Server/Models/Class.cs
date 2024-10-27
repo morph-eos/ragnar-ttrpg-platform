@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace JuggleHiveWebapp.Server.Models;
+﻿namespace JuggleHiveWebapp.Server.Models;
 
 public partial class Class
 {
@@ -15,9 +12,9 @@ public partial class Class
 
     public long StatsId { get; set; }
 
-    public virtual ICollection<AllowedItem> AllowedItems { get; set; } = new List<AllowedItem>();
+    public virtual ICollection<AllowedItem> AllowedItems { get; set; } = [];
 
-    public virtual ICollection<CharacterClass> CharacterClasses { get; set; } = new List<CharacterClass>();
+    public virtual ICollection<CharacterClass> CharacterClasses { get; set; } = [];
 
     public virtual BaseStat Stats { get; set; } = null!;
 

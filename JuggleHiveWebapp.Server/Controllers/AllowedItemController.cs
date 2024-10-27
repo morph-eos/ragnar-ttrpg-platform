@@ -1,24 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using JuggleHiveWebapp.Server.Models;
+using JuggleHiveWebapp.Server.Services.Interfaces;
 
 namespace JuggleHiveWebapp.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AllowedItemController(PostgresContext context) : ControllerBase
+    public class AllowedItemController(IAllowedItemService allowedItemService) : ControllerBase
     {
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AllowedItem>>> GetAllowedItems()
         {
-            return await context.AllowedItems.ToListAsync();
+            return Ok(await allowedItemService.GetAllAllowedItemsAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<AllowedItem>> GetAllowedItem(long id)
         {
-            var allowedItem = await context.AllowedItems.FindAsync(id);
+            var allowedItem = await allowedItemService.GetAllowedItemByIdAsync(id);
 
             if (allowedItem == null)
             {
@@ -36,54 +36,22 @@ namespace JuggleHiveWebapp.Server.Controllers
                 return BadRequest();
             }
 
-            context.Entry(allowedItem).State = EntityState.Modified;
-
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AllowedItemExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await allowedItemService.UpdateAllowedItemAsync(allowedItem);
             return NoContent();
         }
 
         [HttpPost]
         public async Task<ActionResult<AllowedItem>> PostAllowedItem(AllowedItem allowedItem)
         {
-            context.AllowedItems.Add(allowedItem);
-            await context.SaveChangesAsync();
-
-            return CreatedAtAction("GetAllowedItem", new { id = allowedItem.Id }, allowedItem);
+            await allowedItemService.AddAllowedItemAsync(allowedItem);
+            return CreatedAtAction(nameof(GetAllowedItem), new { id = allowedItem.Id }, allowedItem);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAllowedItem(long id)
         {
-            var allowedItem = await context.AllowedItems.FindAsync(id);
-            if (allowedItem == null)
-            {
-                return NotFound();
-            }
-
-            context.AllowedItems.Remove(allowedItem);
-            await context.SaveChangesAsync();
-
+            await allowedItemService.DeleteAllowedItemAsync(id);
             return NoContent();
-        }
-
-        private bool AllowedItemExists(long id)
-        {
-            return context.AllowedItems.Any(e => e.Id == id);
         }
     }
 }

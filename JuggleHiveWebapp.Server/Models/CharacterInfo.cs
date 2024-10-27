@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace JuggleHiveWebapp.Server.Models;
+﻿namespace JuggleHiveWebapp.Server.Models;
 
 public partial class CharacterInfo
 {
@@ -25,5 +22,5 @@ public partial class CharacterInfo
 
     public int? CurrentMetamorphs { get; set; }
 
-    public virtual ICollection<Chara> Charas { get; set; } = new List<Chara>();
+    public virtual ICollection<Chara> Charas { get; set; } = [];
 }

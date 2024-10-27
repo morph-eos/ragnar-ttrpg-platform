@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace JuggleHiveWebapp.Server.Models;
+﻿namespace JuggleHiveWebapp.Server.Models;
 
 public partial class Inventory
 {
@@ -15,5 +12,5 @@ public partial class Inventory
 
     public virtual Chara Character { get; set; } = null!;
 
-    public virtual ICollection<Item> Items { get; set; } = new List<Item>();
+    public virtual ICollection<Item> Items { get; set; } = [];
 }
