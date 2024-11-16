@@ -1,31 +1,36 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using JuggleHiveWebapp.Server.Models;
+using JuggleHiveWebapp.Server.Services.Interfaces;
 
 namespace JuggleHiveWebapp.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SkillController(PostgresContext context) : ControllerBase
+    public class SkillController(ISkillService skillService) : ControllerBase
     {
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Skill>>> GetSkills()
         {
-            return await context.Skills.ToListAsync();
+            return Ok(await skillService.GetAllSkillsAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Skill>> GetSkill(long id)
         {
-            var skill = await context.Skills.FindAsync(id);
-
+            var skill = await skillService.GetSkillByIdAsync(id);
             if (skill == null)
             {
                 return NotFound();
             }
+            return Ok(skill);
+        }
 
-            return skill;
+        [HttpGet("family/{skillFamilyId}")]
+        public async Task<IActionResult> GetSkillsByFamilyId(long skillFamilyId)
+        {
+            var skills = await skillService.GetSkillsByFamilyIdAsync(skillFamilyId);
+            return Ok(skills);
         }
 
         [HttpPut("{id}")]
@@ -36,54 +41,22 @@ namespace JuggleHiveWebapp.Server.Controllers
                 return BadRequest();
             }
 
-            context.Entry(skill).State = EntityState.Modified;
-
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SkillExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await skillService.UpdateSkillAsync(skill);
             return NoContent();
         }
 
         [HttpPost]
         public async Task<ActionResult<Skill>> PostSkill(Skill skill)
         {
-            context.Skills.Add(skill);
-            await context.SaveChangesAsync();
-
-            return CreatedAtAction("GetSkill", new { id = skill.Id }, skill);
+            await skillService.AddSkillAsync(skill);
+            return CreatedAtAction(nameof(GetSkill), new { id = skill.Id }, skill);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSkill(long id)
         {
-            var skill = await context.Skills.FindAsync(id);
-            if (skill == null)
-            {
-                return NotFound();
-            }
-
-            context.Skills.Remove(skill);
-            await context.SaveChangesAsync();
-
+            await skillService.DeleteSkillAsync(id);
             return NoContent();
-        }
-
-        private bool SkillExists(long id)
-        {
-            return context.Skills.Any(e => e.Id == id);
         }
     }
 }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace JuggleHiveWebapp.Server.Models;
+﻿namespace JuggleHiveWebapp.Server.Models;
 
 public partial class SkillModifier
 {
@@ -29,5 +26,5 @@ public partial class SkillModifier
 
     public virtual Skill Skill { get; set; } = null!;
 
-    public virtual ICollection<SkillModifierDix> SkillModifierDices { get; set; } = new List<SkillModifierDix>();
+    public virtual ICollection<SkillModifierDix> SkillModifierDices { get; set; } = [];
 }

@@ -1,31 +1,43 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using JuggleHiveWebapp.Server.Models;
+using JuggleHiveWebapp.Server.Services.Interfaces;
 
 namespace JuggleHiveWebapp.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TreeSkillController(PostgresContext context) : ControllerBase
+    public class TreeSkillController(ITreeSkillService treeSkillService) : ControllerBase
     {
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TreeSkill>>> GetTreeSkills()
         {
-            return await context.TreeSkills.ToListAsync();
+            return Ok(await treeSkillService.GetAllTreeSkillsAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<TreeSkill>> GetTreeSkill(long id)
         {
-            var treeSkill = await context.TreeSkills.FindAsync(id);
-
+            var treeSkill = await treeSkillService.GetTreeSkillByIdAsync(id);
             if (treeSkill == null)
             {
                 return NotFound();
             }
+            return Ok(treeSkill);
+        }
 
-            return treeSkill;
+        [HttpGet("tree/{treeId}")]
+        public async Task<IActionResult> GetTreeSkillsByTreeId(long treeId)
+        {
+            var treeSkills = await treeSkillService.GetTreeSkillsByTreeIdAsync(treeId);
+            return Ok(treeSkills);
+        }
+
+        [HttpGet("skillfamily/{skillFamilyId}")]
+        public async Task<IActionResult> GetTreeSkillsBySkillFamilyId(long skillFamilyId)
+        {
+            var treeSkills = await treeSkillService.GetTreeSkillsBySkillFamilyIdAsync(skillFamilyId);
+            return Ok(treeSkills);
         }
 
         [HttpPut("{id}")]
@@ -36,54 +48,22 @@ namespace JuggleHiveWebapp.Server.Controllers
                 return BadRequest();
             }
 
-            context.Entry(treeSkill).State = EntityState.Modified;
-
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TreeSkillExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await treeSkillService.UpdateTreeSkillAsync(treeSkill);
             return NoContent();
         }
 
         [HttpPost]
         public async Task<ActionResult<TreeSkill>> PostTreeSkill(TreeSkill treeSkill)
         {
-            context.TreeSkills.Add(treeSkill);
-            await context.SaveChangesAsync();
-
-            return CreatedAtAction("GetTreeSkill", new { id = treeSkill.Id }, treeSkill);
+            await treeSkillService.AddTreeSkillAsync(treeSkill);
+            return CreatedAtAction(nameof(GetTreeSkill), new { id = treeSkill.Id }, treeSkill);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTreeSkill(long id)
         {
-            var treeSkill = await context.TreeSkills.FindAsync(id);
-            if (treeSkill == null)
-            {
-                return NotFound();
-            }
-
-            context.TreeSkills.Remove(treeSkill);
-            await context.SaveChangesAsync();
-
+            await treeSkillService.DeleteTreeSkillAsync(id);
             return NoContent();
-        }
-
-        private bool TreeSkillExists(long id)
-        {
-            return context.TreeSkills.Any(e => e.Id == id);
         }
     }
 }

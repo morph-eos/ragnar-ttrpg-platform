@@ -8,5 +8,5 @@ public partial class User
 
     public string Password { get; set; } = null!;
 
-    public virtual ICollection<Chara> Charas { get; set; } = new List<Chara>();
+    public virtual ICollection<Chara> Charas { get; set; } = [];
 }

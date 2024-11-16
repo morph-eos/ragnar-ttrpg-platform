@@ -1,31 +1,36 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using JuggleHiveWebapp.Server.Models;
+using JuggleHiveWebapp.Server.Services.Interfaces;
 
 namespace JuggleHiveWebapp.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class NewsController(PostgresContext context) : ControllerBase
+    public class NewsController(INewsService newsService) : ControllerBase
     {
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<News>>> GetNews()
         {
-            return await context.News.ToListAsync();
+            return Ok(await newsService.GetAllNewsAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<News>> GetNews(long id)
         {
-            var news = await context.News.FindAsync(id);
-
+            var news = await newsService.GetNewsByIdAsync(id);
             if (news == null)
             {
                 return NotFound();
             }
+            return Ok(news);
+        }
 
-            return news;
+        [HttpGet("important")]
+        public async Task<IActionResult> GetImportantNews()
+        {
+            var importantNews = await newsService.GetImportantNewsAsync();
+            return Ok(importantNews);
         }
 
         [HttpPut("{id}")]
@@ -36,68 +41,22 @@ namespace JuggleHiveWebapp.Server.Controllers
                 return BadRequest();
             }
 
-            context.Entry(news).State = EntityState.Modified;
-
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!NewsExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await newsService.UpdateNewsAsync(news);
             return NoContent();
         }
 
         [HttpPost]
         public async Task<ActionResult<News>> PostNews(News news)
         {
-            context.News.Add(news);
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (NewsExists(news.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetNews", new { id = news.Id }, news);
+            await newsService.AddNewsAsync(news);
+            return CreatedAtAction(nameof(GetNews), new { id = news.Id }, news);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteNews(long id)
         {
-            var news = await context.News.FindAsync(id);
-            if (news == null)
-            {
-                return NotFound();
-            }
-
-            context.News.Remove(news);
-            await context.SaveChangesAsync();
-
+            await newsService.DeleteNewsAsync(id);
             return NoContent();
-        }
-
-        private bool NewsExists(long id)
-        {
-            return context.News.Any(e => e.Id == id);
         }
     }
 }

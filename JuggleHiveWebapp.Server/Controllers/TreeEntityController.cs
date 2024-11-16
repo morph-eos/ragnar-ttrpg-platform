@@ -1,31 +1,29 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using JuggleHiveWebapp.Server.Models;
+using JuggleHiveWebapp.Server.Services.Interfaces;
 
 namespace JuggleHiveWebapp.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TreeEntityController(PostgresContext context) : ControllerBase
+    public class TreeEntityController(ITreeEntityService treeEntityService) : ControllerBase
     {
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TreeEntity>>> GetTreeEntities()
         {
-            return await context.TreeEntities.ToListAsync();
+            return Ok(await treeEntityService.GetAllTreeEntitiesAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<TreeEntity>> GetTreeEntity(long id)
         {
-            var treeEntity = await context.TreeEntities.FindAsync(id);
-
+            var treeEntity = await treeEntityService.GetTreeEntityByIdAsync(id);
             if (treeEntity == null)
             {
                 return NotFound();
             }
-
-            return treeEntity;
+            return Ok(treeEntity);
         }
 
         [HttpPut("{id}")]
@@ -36,54 +34,22 @@ namespace JuggleHiveWebapp.Server.Controllers
                 return BadRequest();
             }
 
-            context.Entry(treeEntity).State = EntityState.Modified;
-
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TreeEntityExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await treeEntityService.UpdateTreeEntityAsync(treeEntity);
             return NoContent();
         }
 
         [HttpPost]
         public async Task<ActionResult<TreeEntity>> PostTreeEntity(TreeEntity treeEntity)
         {
-            context.TreeEntities.Add(treeEntity);
-            await context.SaveChangesAsync();
-
-            return CreatedAtAction("GetTreeEntity", new { id = treeEntity.Id }, treeEntity);
+            await treeEntityService.AddTreeEntityAsync(treeEntity);
+            return CreatedAtAction(nameof(GetTreeEntity), new { id = treeEntity.Id }, treeEntity);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTreeEntity(long id)
         {
-            var treeEntity = await context.TreeEntities.FindAsync(id);
-            if (treeEntity == null)
-            {
-                return NotFound();
-            }
-
-            context.TreeEntities.Remove(treeEntity);
-            await context.SaveChangesAsync();
-
+            await treeEntityService.DeleteTreeEntityAsync(id);
             return NoContent();
-        }
-
-        private bool TreeEntityExists(long id)
-        {
-            return context.TreeEntities.Any(e => e.Id == id);
         }
     }
 }

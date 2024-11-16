@@ -1,31 +1,40 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using JuggleHiveWebapp.Server.Models;
+using JuggleHiveWebapp.Server.Services.Interfaces;
 
 namespace JuggleHiveWebapp.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController(PostgresContext context) : ControllerBase
+    public class UserController(IUserService userService) : ControllerBase
     {
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            return await context.Users.ToListAsync();
+            return Ok(await userService.GetAllUsersAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(long id)
         {
-            var user = await context.Users.FindAsync(id);
-
+            var user = await userService.GetUserByIdAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
+            return Ok(user);
+        }
 
-            return user;
+        [HttpGet("username/{username}")]
+        public async Task<IActionResult> GetUserByUsername(string username)
+        {
+            var user = await userService.GetUserByUsernameAsync(username);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
         }
 
         [HttpPut("{id}")]
@@ -36,68 +45,22 @@ namespace JuggleHiveWebapp.Server.Controllers
                 return BadRequest();
             }
 
-            context.Entry(user).State = EntityState.Modified;
-
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await userService.UpdateUserAsync(user);
             return NoContent();
         }
 
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(User user)
         {
-            context.Users.Add(user);
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (UserExists(user.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            var users = await userService.GetAllUsersAsync();
+            return Ok(users);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(long id)
         {
-            var user = await context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            context.Users.Remove(user);
-            await context.SaveChangesAsync();
-
+            await userService.DeleteUserAsync(id);
             return NoContent();
-        }
-
-        private bool UserExists(long id)
-        {
-            return context.Users.Any(e => e.Id == id);
         }
     }
 }

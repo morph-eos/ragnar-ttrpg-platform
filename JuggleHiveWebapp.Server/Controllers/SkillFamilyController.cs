@@ -1,31 +1,29 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using JuggleHiveWebapp.Server.Models;
+using JuggleHiveWebapp.Server.Services.Interfaces;
 
 namespace JuggleHiveWebapp.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SkillFamilyController(PostgresContext context) : ControllerBase
+    public class SkillFamilyController(ISkillFamilyService skillFamilyService) : ControllerBase
     {
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SkillFamily>>> GetSkillFamilies()
         {
-            return await context.SkillFamilies.ToListAsync();
+            return Ok(await skillFamilyService.GetAllSkillFamiliesAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<SkillFamily>> GetSkillFamily(long id)
         {
-            var skillFamily = await context.SkillFamilies.FindAsync(id);
-
+            var skillFamily = await skillFamilyService.GetSkillFamilyByIdAsync(id);
             if (skillFamily == null)
             {
                 return NotFound();
             }
-
-            return skillFamily;
+            return Ok(skillFamily);
         }
 
         [HttpPut("{id}")]
@@ -36,54 +34,22 @@ namespace JuggleHiveWebapp.Server.Controllers
                 return BadRequest();
             }
 
-            context.Entry(skillFamily).State = EntityState.Modified;
-
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SkillFamilyExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await skillFamilyService.UpdateSkillFamilyAsync(skillFamily);
             return NoContent();
         }
 
         [HttpPost]
         public async Task<ActionResult<SkillFamily>> PostSkillFamily(SkillFamily skillFamily)
         {
-            context.SkillFamilies.Add(skillFamily);
-            await context.SaveChangesAsync();
-
-            return CreatedAtAction("GetSkillFamily", new { id = skillFamily.Id }, skillFamily);
+            await skillFamilyService.AddSkillFamilyAsync(skillFamily);
+            return CreatedAtAction(nameof(GetSkillFamily), new { id = skillFamily.Id }, skillFamily);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSkillFamily(long id)
         {
-            var skillFamily = await context.SkillFamilies.FindAsync(id);
-            if (skillFamily == null)
-            {
-                return NotFound();
-            }
-
-            context.SkillFamilies.Remove(skillFamily);
-            await context.SaveChangesAsync();
-
+            await skillFamilyService.DeleteSkillFamilyAsync(id);
             return NoContent();
-        }
-
-        private bool SkillFamilyExists(long id)
-        {
-            return context.SkillFamilies.Any(e => e.Id == id);
         }
     }
 }

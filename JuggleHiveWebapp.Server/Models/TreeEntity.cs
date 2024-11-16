@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace JuggleHiveWebapp.Server.Models;
+﻿namespace JuggleHiveWebapp.Server.Models;
 
 public partial class TreeEntity
 {
@@ -11,11 +8,11 @@ public partial class TreeEntity
 
     public string Description { get; set; } = null!;
 
-    public virtual ICollection<CharactersTreePoint> CharactersTreePoints { get; set; } = new List<CharactersTreePoint>();
+    public virtual ICollection<CharactersTreePoint> CharactersTreePoints { get; set; } = [];
 
-    public virtual ICollection<Class> Classes { get; set; } = new List<Class>();
+    public virtual ICollection<Class> Classes { get; set; } = [];
 
-    public virtual ICollection<RaceSkill> RaceSkills { get; set; } = new List<RaceSkill>();
+    public virtual ICollection<RaceSkill> RaceSkills { get; set; } = [];
 
-    public virtual ICollection<TreeSkill> TreeSkills { get; set; } = new List<TreeSkill>();
+    public virtual ICollection<TreeSkill> TreeSkills { get; set; } = [];
 }
