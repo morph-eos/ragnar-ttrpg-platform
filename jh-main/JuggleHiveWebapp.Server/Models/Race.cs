@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace JuggleHiveWebapp.Server.Models;
+﻿namespace JuggleHiveWebapp.Server.Models;
 
 public partial class Race
 {
@@ -15,11 +12,11 @@ public partial class Race
 
     public int LevelUpHp { get; set; }
 
-    public virtual ICollection<Chara> Charas { get; set; } = new List<Chara>();
+    public virtual ICollection<Chara> Charas { get; set; } = [];
 
-    public virtual ICollection<RaceSkill> RaceSkills { get; set; } = new List<RaceSkill>();
+    public virtual ICollection<RaceSkill> RaceSkills { get; set; } = [];
 
     public virtual BaseStat Stat { get; set; } = null!;
 
-    public virtual ICollection<Region> Regions { get; set; } = new List<Region>();
+    public virtual ICollection<Region> Regions { get; set; } = [];
 }

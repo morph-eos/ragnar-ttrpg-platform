@@ -1,31 +1,29 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using JuggleHiveWebapp.Server.Models;
+using JuggleHiveWebapp.Server.Services.Interfaces;
 
 namespace JuggleHiveWebapp.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SkillModifierController(PostgresContext context) : ControllerBase
+    public class SkillModifierController(ISkillModifierService skillModifierService) : ControllerBase
     {
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SkillModifier>>> GetSkillModifiers()
         {
-            return await context.SkillModifiers.ToListAsync();
+            return Ok(await skillModifierService.GetAllSkillModifiersAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<SkillModifier>> GetSkillModifier(long id)
         {
-            var skillModifier = await context.SkillModifiers.FindAsync(id);
-
+            var skillModifier = await skillModifierService.GetSkillModifierByIdAsync(id);
             if (skillModifier == null)
             {
                 return NotFound();
             }
-
-            return skillModifier;
+            return Ok(skillModifier);
         }
 
         [HttpPut("{id}")]
@@ -36,54 +34,22 @@ namespace JuggleHiveWebapp.Server.Controllers
                 return BadRequest();
             }
 
-            context.Entry(skillModifier).State = EntityState.Modified;
-
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SkillModifierExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await skillModifierService.UpdateSkillModifierAsync(skillModifier);
             return NoContent();
         }
 
         [HttpPost]
         public async Task<ActionResult<SkillModifier>> PostSkillModifier(SkillModifier skillModifier)
         {
-            context.SkillModifiers.Add(skillModifier);
-            await context.SaveChangesAsync();
-
-            return CreatedAtAction("GetSkillModifier", new { id = skillModifier.Id }, skillModifier);
+            await skillModifierService.AddSkillModifierAsync(skillModifier);
+            return CreatedAtAction(nameof(GetSkillModifier), new { id = skillModifier.Id }, skillModifier);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSkillModifier(long id)
         {
-            var skillModifier = await context.SkillModifiers.FindAsync(id);
-            if (skillModifier == null)
-            {
-                return NotFound();
-            }
-
-            context.SkillModifiers.Remove(skillModifier);
-            await context.SaveChangesAsync();
-
+            await skillModifierService.DeleteSkillModifierAsync(id);
             return NoContent();
-        }
-
-        private bool SkillModifierExists(long id)
-        {
-            return context.SkillModifiers.Any(e => e.Id == id);
         }
     }
 }

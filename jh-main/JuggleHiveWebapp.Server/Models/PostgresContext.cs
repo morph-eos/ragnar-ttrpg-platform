@@ -53,8 +53,6 @@ public partial class PostgresContext : DbContext
 
     public virtual DbSet<TreeSkill> TreeSkills { get; set; }
 
-    public virtual DbSet<UiMenu> UiMenus { get; set; }
-
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -562,36 +560,6 @@ public partial class PostgresContext : DbContext
                 .HasForeignKey(d => d.TreeId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("tree_skills_tree_id_fkey");
-        });
-
-        modelBuilder.Entity<UiMenu>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("ui_menu_pkey");
-
-            entity.ToTable("ui_menu", "menu");
-
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("id");
-            entity.Property(e => e.DisplayName)
-                .HasDefaultValueSql("'???'::character varying")
-                .HasColumnType("character varying")
-                .HasColumnName("display_name");
-            entity.Property(e => e.IsEnabled)
-                .HasDefaultValue((short)0)
-                .HasColumnName("is_enabled");
-            entity.Property(e => e.Item)
-                .HasColumnType("character varying")
-                .HasColumnName("item");
-            entity.Property(e => e.Order)
-                .HasDefaultValue(99)
-                .HasColumnName("order");
-            entity.Property(e => e.OwnerId).HasColumnName("owner_id");
-            entity.Property(e => e.SiteId).HasColumnName("site_id");
-
-            entity.HasOne(d => d.Owner).WithMany(p => p.InverseOwner)
-                .HasForeignKey(d => d.OwnerId)
-                .HasConstraintName("ui_menu_owner_fk");
         });
 
         modelBuilder.Entity<User>(entity =>

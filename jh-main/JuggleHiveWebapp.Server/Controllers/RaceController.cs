@@ -1,31 +1,29 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using JuggleHiveWebapp.Server.Models;
+using JuggleHiveWebapp.Server.Services.Interfaces;
 
 namespace JuggleHiveWebapp.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RaceController(PostgresContext context) : ControllerBase
+    public class RaceController(IRaceService raceService) : ControllerBase
     {
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Race>>> GetRaces()
         {
-            return await context.Races.ToListAsync();
+            return Ok(await raceService.GetAllRacesAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Race>> GetRace(long id)
         {
-            var race = await context.Races.FindAsync(id);
-
+            var race = await raceService.GetRaceByIdAsync(id);
             if (race == null)
             {
                 return NotFound();
             }
-
-            return race;
+            return Ok(race);
         }
 
         [HttpPut("{id}")]
@@ -36,54 +34,22 @@ namespace JuggleHiveWebapp.Server.Controllers
                 return BadRequest();
             }
 
-            context.Entry(race).State = EntityState.Modified;
-
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RaceExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await raceService.UpdateRaceAsync(race);
             return NoContent();
         }
 
         [HttpPost]
         public async Task<ActionResult<Race>> PostRace(Race race)
         {
-            context.Races.Add(race);
-            await context.SaveChangesAsync();
-
-            return CreatedAtAction("GetRace", new { id = race.Id }, race);
+            await raceService.AddRaceAsync(race);
+            return CreatedAtAction(nameof(GetRace), new { id = race.Id }, race);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRace(long id)
         {
-            var race = await context.Races.FindAsync(id);
-            if (race == null)
-            {
-                return NotFound();
-            }
-
-            context.Races.Remove(race);
-            await context.SaveChangesAsync();
-
+            await raceService.DeleteRaceAsync(id);
             return NoContent();
-        }
-
-        private bool RaceExists(long id)
-        {
-            return context.Races.Any(e => e.Id == id);
         }
     }
 }

@@ -18,13 +18,13 @@ public partial class Skill
 
     public int SkillFamilyRank { get; set; }
 
-    public virtual ICollection<CharacterSkill> CharacterSkills { get; set; } = new List<CharacterSkill>();
+    public virtual ICollection<CharacterSkill> CharacterSkills { get; set; } = [];
 
-    public virtual ICollection<Item> Items { get; set; } = new List<Item>();
+    public virtual ICollection<Item> Items { get; set; } = [];
 
     public virtual SkillFamily SkillFamily { get; set; } = null!;
 
-    public virtual ICollection<SkillModifier> SkillModifiers { get; set; } = new List<SkillModifier>();
+    public virtual ICollection<SkillModifier> SkillModifiers { get; set; } = [];
 
-    public virtual ICollection<Item> ItemsNavigation { get; set; } = new List<Item>();
+    public virtual ICollection<Item> ItemsNavigation { get; set; } = [];
 }

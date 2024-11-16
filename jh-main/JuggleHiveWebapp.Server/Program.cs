@@ -35,7 +35,6 @@ builder.Services.AddScoped<ISkillModifierDixService, SkillModifierDixService>();
 builder.Services.AddScoped<ISkillService, SkillService>();
 builder.Services.AddScoped<ITreeEntityService, TreeEntityService>();
 builder.Services.AddScoped<ITreeSkillService, TreeSkillService>();
-builder.Services.AddScoped<IUiMenuService, UiMenuService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
