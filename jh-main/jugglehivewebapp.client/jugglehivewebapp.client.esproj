@@ -7,4 +7,9 @@
     <!-- Folder where production build objects will be placed -->
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist\jugglehivewebapp.client\browser\</BuildOutputFolder>
   </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="src\app\main\" />
+    <Folder Include="src\app\projectsketch\" />
+    <Folder Include="src\app\ragnar\" />
+  </ItemGroup>
 </Project>
