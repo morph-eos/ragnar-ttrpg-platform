@@ -20,5 +20,5 @@ jobs:
         with:
           azcliversion: 2.30.0
           inlineScript: |
-            az vm start --resource-group jugglehive --name jugglehive-cloud
-            az vm start --resource-group jugglehive --name jugglehive-webapp
+            az vm start --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-cloud
+            az vm start --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-webapp
