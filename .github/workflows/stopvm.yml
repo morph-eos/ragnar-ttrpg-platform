@@ -62,7 +62,7 @@ jobs:
         with:
           azcliversion: 2.30.0
           inlineScript: |
-            az vm stop --resource-group jugglehive --name jugglehive-cloud
-            az vm deallocate --resource-group jugglehive --name jugglehive-cloud
-            az vm stop --resource-group jugglehive --name jugglehive-webapp
-            az vm deallocate --resource-group jugglehive --name jugglehive-webapp
+            az vm stop --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-cloud
+            az vm deallocate --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-cloud
+            az vm stop --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-webapp
+            az vm deallocate --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-webapp
