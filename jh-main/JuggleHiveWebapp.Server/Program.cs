@@ -8,6 +8,36 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp", builder =>
+    {
+        var domain = Environment.GetEnvironmentVariable("DOMAIN");
+        builder.WithOrigins("https://localhost:4200", "http://localhost:4200", $"https://{domain}", $"http://{domain}");
+
+        // List of allowed subdomains
+        var allowedSubdomains = new[] {"ragnar", "projectsketch"};
+
+        foreach (var subdomain in allowedSubdomains)
+        {
+            builder.WithOrigins($"https://{subdomain}.localhost:4200", $"http://{subdomain}.localhost:4200");
+        }
+
+        // If the DOMAIN environment variable is present, add it with the allowed subdomains
+        if (!string.IsNullOrEmpty(domain))
+        {
+            foreach (var subdomain in allowedSubdomains)
+            {
+                builder.WithOrigins($"https://{subdomain}.{domain}", $"http://{subdomain}.{domain}");
+            }
+        }
+
+        builder
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials(); // Allows using cookies or credentials for CORS
+    });
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -15,6 +45,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<PostgresContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddScoped<IAzureFileService, AzureFileService>();
 builder.Services.AddScoped<IAllowedItemService, AllowedItemService>();
 builder.Services.AddScoped<IBaseStatService, BaseStatService>();
 builder.Services.AddScoped<ICharaService, CharaService>();
@@ -50,6 +81,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAngularApp");
 
 app.UseAuthorization();
 
