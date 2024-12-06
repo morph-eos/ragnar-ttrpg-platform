@@ -2,8 +2,12 @@ using JuggleHiveWebapp.Server.Models;
 using JuggleHiveWebapp.Server.Services;
 using JuggleHiveWebapp.Server.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add configuration to the container.
+Env.Load();
 
 // Add services to the container.
 

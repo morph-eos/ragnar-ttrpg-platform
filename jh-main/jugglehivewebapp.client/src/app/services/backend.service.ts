@@ -11,8 +11,9 @@ export class BackendService {
     getBackendUrl(): string {
         let Url: string = '';
         if (window.location.hostname.includes('localhost')) {
-            if (window.location.port === '4200') { Url = 'localhost:7187' }
-            else { Url = 'localhost:8080' };
+            Url = 'localhost';
+            if (window.location.port === '4200') { Url = Url + ':7187' }
+            else { Url = Url + ':8080' };
         } else {
             Url = window.location.hostname.split('.').slice(-2).join('.');
         }

@@ -9,7 +9,7 @@ public class AzureFileService : IAzureFileService
 
     public AzureFileService()
     {
-        _accountName = Environment.GetEnvironmentVariable("AZURE_ACCOUNT_NAME") ?? throw new ArgumentNullException("AZURE_ACCOUNT_NAME");
+        _accountName = Environment.GetEnvironmentVariable("AZURE_STORAGE_ACCOUNT_NAME") ?? throw new ArgumentNullException("AZURE_STORAGE_ACCOUNT_NAME");
         _accountKey = Environment.GetEnvironmentVariable("AZURE_STORAGE_ACCOUNT_KEY") ?? throw new ArgumentNullException("AZURE_STORAGE_ACCOUNT_KEY");
     }
 
