@@ -1,5 +1,5 @@
 import { Directive, ElementRef, HostListener } from '@angular/core';
-import { AzureStorageService } from '../services/azure-storage.service';
+import { AzureService } from '../services/azure.service';
 
 @Directive({
     selector: 'img, video, iframe, a' // Applied to all <img>, <video>, <iframe>, <a> tags
@@ -7,7 +7,7 @@ import { AzureStorageService } from '../services/azure-storage.service';
 export class FileFallbackDirective {
     constructor(
         private el: ElementRef,
-        private azureStorageService: AzureStorageService
+        private azureService: AzureService
     ) {}
 
     @HostListener('error') onError() {
@@ -30,7 +30,7 @@ export class FileFallbackDirective {
         }
 
         // Make a request to the backend to get the new URL
-        this.azureStorageService.getTempFileURI(filePath).subscribe(
+        this.azureService.getTempFileURI(filePath).subscribe(
             (newUrl: string) => {
                 if (element.tagName === 'IMG' || element.tagName === 'VIDEO' || element.tagName === 'IFRAME') {
                     // Update the element's source with the new URL
