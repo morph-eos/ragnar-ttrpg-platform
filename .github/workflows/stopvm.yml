@@ -30,39 +30,43 @@ jobs:
             (crontab -l 2>/dev/null; echo "@reboot sudo mv -f /root/data/nextcloud-db-backup.sql /root/azurestorage/backup/nextcloud-db-$(date +"%Y-%m-%d").sql") | crontab -
             cd /root/azurestorage/backup
             sudo rm -f nextcloud-$(date +"%Y-%m-%d" -d "-7 days").zip nextcloud-$(date +"%Y-%m-%d" -d "-8 days").zip nextcloud-db-$(date +"%Y-%m-%d" -d "-7 days").sql nextcloud-db-$(date +"%Y-%m-%d" -d "-8 days").sql
+
+            # Eliminare alla riattivazione del main server
+            cd /root/docker
+            sudo docker compose up -d
       
-      - name: Webapp Backup
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.DOMAIN }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SERVER_KEY }}
-          script: |
-            crontab -l | grep -v '@reboot sudo mv' | crontab -
-            cd /root/
-            pg_dump --dbname=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD}}@${{ secrets.POSTGRES_HOST }}:5432/${{ secrets.POSTGRES_DATABASE }} > postgres-backup.sql
-            (crontab -l 2>/dev/null; echo "@reboot sudo mv -f /root/postgres-backup.sql /root/azurestorage/backup/postgres-$(date +"%Y-%m-%d").sql") | crontab -
-            cd /root/azurestorage/backup
-            sudo rm -f postgres-$(date +"%Y-%m-%d" -d "-7 days").sql postgres-$(date +"%Y-%m-%d" -d "-8 days").sql
-            
+      #      - name: Webapp Backup
+      #        uses: appleboy/ssh-action@master
+      #        with:
+      #          host: ${{ secrets.DOMAIN }}
+      #          username: ${{ secrets.SERVER_USERNAME }}
+      #          key: ${{ secrets.SERVER_KEY }}
+      #          script: |
+      #            crontab -l | grep -v '@reboot sudo mv' | crontab -
+      #            cd /root/
+      #            pg_dump --dbname=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD}}@${{ secrets.POSTGRES_HOST }}:5432/${{ secrets.POSTGRES_DATABASE }} > postgres-backup.sql
+      #            (crontab -l 2>/dev/null; echo "@reboot sudo mv -f /root/postgres-backup.sql /root/azurestorage/backup/postgres-$(date +"%Y-%m-%d").sql") | crontab -
+      #            cd /root/azurestorage/backup
+      #            sudo rm -f postgres-$(date +"%Y-%m-%d" -d "-7 days").sql postgres-$(date +"%Y-%m-%d" -d "-8 days").sql
 
-  stopvm:
-    needs: backup
-    runs-on: ubuntu-latest
 
-    steps: 
-
-      - name: Azure Login
-        uses: Azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Azure CLI script
-        uses: azure/CLI@v1
-        with:
-          azcliversion: 2.30.0
-          inlineScript: |
-            az vm stop --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-cloud
-            az vm deallocate --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-cloud
-            az vm stop --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-webapp
-            az vm deallocate --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-webapp
+  #   stopvm:
+  #     needs: backup
+  #     runs-on: ubuntu-latest
+  #
+  #     steps: 
+  #
+  #       - name: Azure Login
+  #         uses: Azure/login@v1
+  #         with:
+  #           creds: ${{ secrets.AZURE_CREDENTIALS }}
+  #
+  #       - name: Azure CLI script
+  #         uses: azure/CLI@v1
+  #         with:
+  #           azcliversion: 2.30.0
+  #           inlineScript: |
+  #             az vm stop --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-cloud
+  #             az vm deallocate --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-cloud
+  #             az vm stop --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-webapp
+  #             az vm deallocate --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-webapp

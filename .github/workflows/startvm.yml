@@ -1,8 +1,10 @@
 name: startvm
 
 on:
-  schedule:
-    - cron: '00 06 * * *'
+  #schedule:
+  #  - cron: '00 06 * * *'
+    repository_dispatch:
+      types: [jugglehive-disabled]
 
 jobs:
   startvm:
