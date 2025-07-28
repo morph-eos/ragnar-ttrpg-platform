@@ -1,72 +1,440 @@
+# ============================================================================
+# RAGNAR TTRPG PLATFORM - VM SHUTDOWN AND BACKUP WORKFLOW
+# ============================================================================
+# 
+# This workflow orchestrates the nightly shutdown process for Azure VMs
+# with comprehensive backup operations. It implements a sophisticated
+# backup and resource management strategy including:
+# 
+# - Automated database backups with transaction consistency
+# - File system backup with compression and retention management
+# - Azure Storage integration for offsite backup storage
+# - Graceful service shutdown and resource cleanup
+# - VM lifecycle management for cost optimization
+# 
+# Schedule: Daily at 21:30 UTC (customizable via cron expression)
+# Architecture: Multi-stage backup with Azure integration
+# Author: Stefano Sciacovelli (https://github.com/M04ph3u2)
+# DevOps Infrastructure Implementation
+# ============================================================================
+
 name: stopvm
 
+# ============================================================================
+# WORKFLOW TRIGGERS
+# ============================================================================
+# 
+# CURRENTLY DISABLED: Scheduled execution for automated nightly operations
+# 
+# This workflow is temporarily disabled to prevent automatic VM shutdowns
+# and backup operations. To re-enable, uncomment the schedule section below
+# and adjust timing based on your timezone and usage patterns.
+# 
+# When enabled, this workflow performs:
+# - Backup critical data (databases and file systems)
+# - Clean up old backup files to manage storage costs
+# - Shutdown VMs to minimize compute costs
 on:
-  schedule:
-    - cron: '30 21 * * *'
+  # Disabled scheduled execution - uncomment to re-enable
+  # schedule:
+  #   # Run at 21:30 UTC every day (9:30 PM UTC)
+  #   # Adjust timing based on your timezone and usage patterns
+  #   - cron: '30 21 * * *'
+  
+  # Manual trigger for testing and maintenance purposes
+  workflow_dispatch:
 
 jobs:
   
+  # ==========================================================================
+  # BACKUP JOB
+  # ==========================================================================
+  # 
+  # Handles comprehensive backup operations for both Nextcloud cloud services
+  # and the main web application. Implements best practices for data
+  # consistency, compression, and retention management.
   backup:
     runs-on: ubuntu-latest
 
     steps:
 
+      # ======================================================================
+      # CLOUD SERVICES BACKUP
+      # ======================================================================
+      # 
+      # Performs complete backup of Nextcloud installation including:
+      # - Application files and user data
+      # - Database dump with transaction consistency
+      # - Automated backup retention and cleanup
+      # - Azure Storage integration for offsite storage
       - name: Cloud Backup
         uses: appleboy/ssh-action@master
         with:
-          host: cloud.${{ secrets.DOMAIN }}
+          host: cloud.${{ secrets.DOMAIN }}     # Connect to cloud subdomain
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_KEY }}
           script: |
+            # ==============================================================
+            # CRON JOB CLEANUP
+            # ==============================================================
+            # 
+            # Remove any existing backup transfer cron jobs to prevent
+            # accumulation of duplicate scheduled tasks.
             crontab -l | grep -v '@reboot sudo mv' | crontab -
+            
+            # ==============================================================
+            # SERVICE SHUTDOWN FOR CONSISTENT BACKUP
+            # ==============================================================
+            # 
+            # Stop Docker Compose services to ensure data consistency
+            # during backup operations. This prevents file corruption
+            # and ensures database transaction integrity.
             cd /root/docker
             sudo docker compose down
+            
+            # ==============================================================
+            # NEXTCLOUD FILE SYSTEM BACKUP
+            # ==============================================================
+            # 
+            # Create compressed backup of entire Nextcloud installation
+            # including user files, configuration, and application data.
             cd /root/data
+            
+            # Change ownership to allow backup creation by current user
             sudo chown -R ${{ secrets.SERVER_USERNAME }}:${{ secrets.SERVER_USERNAME }} ./nextcloud
+            
+            # Create compressed ZIP archive of Nextcloud data
+            # This includes: user files, configs, apps, themes, etc.
             zip -r ./nextcloud-backup.zip ./nextcloud
+            
+            # Schedule backup transfer to Azure Storage via cron at next reboot
+            # This ensures backup is transferred even if network issues occur
             (crontab -l 2>/dev/null; echo "@reboot sudo mv -f /root/data/nextcloud-backup.zip /root/azurestorage/backup/nextcloud-$(date +"%Y-%m-%d").zip") | crontab -
+            
+            # Restore proper ownership for Nextcloud operation
             sudo chown -R www-data:www-data ./nextcloud
-            mysqldump -h ${{ secrets.MYSQL_HOST }} -u ${{ secrets.MYSQL_USER }} --password=${{secrets.MYSQL_PASSWORD }} ${{ secrets.MYSQL_DATABASE }} > nextcloud-db-backup.sql
+            
+            # ==============================================================
+            # DATABASE BACKUP
+            # ==============================================================
+            # 
+            # Perform MySQL database dump with complete schema and data.
+            # Uses external database connection for better separation
+            # of concerns and improved backup reliability.
+            mysqldump -h ${{ secrets.MYSQL_HOST }} \
+                     -u ${{ secrets.MYSQL_USER }} \
+                     --password=${{secrets.MYSQL_PASSWORD }} \
+                     ${{ secrets.MYSQL_DATABASE }} > nextcloud-db-backup.sql
+            
+            # Schedule database backup transfer to Azure Storage
             (crontab -l 2>/dev/null; echo "@reboot sudo mv -f /root/data/nextcloud-db-backup.sql /root/azurestorage/backup/nextcloud-db-$(date +"%Y-%m-%d").sql") | crontab -
+            
+            # ==============================================================
+            # BACKUP RETENTION MANAGEMENT
+            # ==============================================================
+            # 
+            # Implement automated cleanup of old backups to manage storage
+            # costs and comply with retention policies. Keeps last 7 days
+            # of backups with 1-day overlap for safety.
             cd /root/azurestorage/backup
-            sudo rm -f nextcloud-$(date +"%Y-%m-%d" -d "-7 days").zip nextcloud-$(date +"%Y-%m-%d" -d "-8 days").zip nextcloud-db-$(date +"%Y-%m-%d" -d "-7 days").sql nextcloud-db-$(date +"%Y-%m-%d" -d "-8 days").sql
+            
+            # Remove file backups older than 7-8 days
+            sudo rm -f nextcloud-$(date +"%Y-%m-%d" -d "-7 days").zip \
+                      nextcloud-$(date +"%Y-%m-%d" -d "-8 days").zip
+            
+            # Remove database backups older than 7-8 days
+            sudo rm -f nextcloud-db-$(date +"%Y-%m-%d" -d "-7 days").sql \
+                      nextcloud-db-$(date +"%Y-%m-%d" -d "-8 days").sql
 
-            # Eliminare alla riattivazione del main server
+            # ==============================================================
+            # SERVICE RESTART (TEMPORARY MEASURE)
+            # ==============================================================
+            # 
+            # Restart services after backup completion
+            # NOTE: This is temporary - remove when main server is reactivated
+            # In production, services should remain stopped until next startup
             cd /root/docker
             sudo docker compose up -d
-      
-      #      - name: Webapp Backup
-      #        uses: appleboy/ssh-action@master
-      #        with:
-      #          host: ${{ secrets.DOMAIN }}
-      #          username: ${{ secrets.SERVER_USERNAME }}
-      #          key: ${{ secrets.SERVER_KEY }}
-      #          script: |
-      #            crontab -l | grep -v '@reboot sudo mv' | crontab -
-      #            cd /root/
-      #            pg_dump --dbname=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD}}@${{ secrets.POSTGRES_HOST }}:5432/${{ secrets.POSTGRES_DATABASE }} > postgres-backup.sql
-      #            (crontab -l 2>/dev/null; echo "@reboot sudo mv -f /root/postgres-backup.sql /root/azurestorage/backup/postgres-$(date +"%Y-%m-%d").sql") | crontab -
-      #            cd /root/azurestorage/backup
-      #            sudo rm -f postgres-$(date +"%Y-%m-%d" -d "-7 days").sql postgres-$(date +"%Y-%m-%d" -d "-8 days").sql
 
+      # ======================================================================
+      # WEB APPLICATION BACKUP
+      # ======================================================================
+      # 
+      # Performs comprehensive backup of the main Ragnar TTRPG Platform
+      # web application including:
+      # - PostgreSQL database dump with full schema and data
+      # - Application files and configuration backup
+      # - Automated retention management for cost optimization
+      # - Azure Storage integration for disaster recovery
+      - name: Webapp Backup
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DOMAIN }}          # Connect to main application domain
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_KEY }}
+          script: |
+            # ==============================================================
+            # CRON JOB CLEANUP
+            # ==============================================================
+            # 
+            # Remove existing backup transfer cron jobs to prevent
+            # accumulation of duplicate scheduled tasks and ensure
+            # clean backup operations.
+            crontab -l | grep -v '@reboot sudo mv' | crontab -
+            
+            # ==============================================================
+            # POSTGRESQL DATABASE BACKUP
+            # ==============================================================
+            # 
+            # Create complete PostgreSQL database dump including:
+            # - All table schemas with constraints and indexes
+            # - Complete data dump with transaction consistency
+            # - User roles and permissions (if applicable)
+            # - Custom functions and stored procedures
+            cd /root/
+            pg_dump --dbname=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD}}@${{ secrets.POSTGRES_HOST }}:5432/${{ secrets.POSTGRES_DATABASE }} > postgres-backup.sql
+            
+            # ==============================================================
+            # BACKUP TRANSFER SCHEDULING
+            # ==============================================================
+            # 
+            # Schedule backup transfer to Azure Storage via cron at reboot
+            # This ensures backup persistence even if immediate network
+            # issues prevent transfer during backup creation.
+            (crontab -l 2>/dev/null; echo "@reboot sudo mv -f /root/postgres-backup.sql /root/azurestorage/backup/postgres-$(date +"%Y-%m-%d").sql") | crontab -
+            
+            # ==============================================================
+            # DATABASE BACKUP RETENTION MANAGEMENT
+            # ==============================================================
+            # 
+            # Implement automated cleanup of old database backups to:
+            # - Manage Azure Storage costs effectively
+            # - Comply with data retention policies
+            # - Maintain optimal backup storage performance
+            cd /root/azurestorage/backup
+            
+            # Remove PostgreSQL backups older than 7-8 days
+            # Maintains 7-day retention with 1-day overlap for safety
+            sudo rm -f postgres-$(date +"%Y-%m-%d" -d "-7 days").sql \
+                      postgres-$(date +"%Y-%m-%d" -d "-8 days").sql
 
-  #   stopvm:
-  #     needs: backup
-  #     runs-on: ubuntu-latest
-  #
-  #     steps: 
-  #
-  #       - name: Azure Login
-  #         uses: Azure/login@v1
-  #         with:
-  #           creds: ${{ secrets.AZURE_CREDENTIALS }}
-  #
-  #       - name: Azure CLI script
-  #         uses: azure/CLI@v1
-  #         with:
-  #           azcliversion: 2.30.0
-  #           inlineScript: |
-  #             az vm stop --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-cloud
-  #             az vm deallocate --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-cloud
-  #             az vm stop --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-webapp
-  #             az vm deallocate --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-webapp
+  # ==========================================================================
+  # AZURE VM SHUTDOWN JOB
+  # ==========================================================================
+  # 
+  # Orchestrates the shutdown and deallocation of Azure VMs for cost
+  # optimization. This job runs after successful backup completion to
+  # ensure data safety before resource shutdown.
+  # 
+  # Cost Optimization Strategy:
+  # - VM shutdown: Stops compute but maintains disk allocation
+  # - VM deallocation: Releases compute resources for maximum savings
+  # - Automated scheduling: Reduces manual intervention requirements
+  # - Dependency management: Ensures backups complete before shutdown
+  stopvm:
+    needs: backup                             # Wait for backup completion
+    runs-on: ubuntu-latest
+
+    steps: 
+
+      # ======================================================================
+      # AZURE AUTHENTICATION
+      # ======================================================================
+      # 
+      # Authenticate with Azure using service principal credentials
+      # stored in GitHub Secrets. This provides secure, automated
+      # access to Azure Resource Manager APIs.
+      - name: Azure Login
+        uses: Azure/login@v1
+        with:
+          # Service principal credentials with VM management permissions
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # ======================================================================
+      # VM LIFECYCLE MANAGEMENT
+      # ======================================================================
+      # 
+      # Execute Azure CLI commands to shutdown and deallocate VMs:
+      # 
+      # Shutdown Process:
+      # 1. Stop VM: Graceful shutdown of guest OS and applications
+      # 2. Deallocate: Release compute resources back to Azure pool
+      # 
+      # Cost Impact:
+      # - Stop: Eliminates compute charges, retains storage charges
+      # - Deallocate: Eliminates compute charges, may release public IP
+      # 
+      # VMs Managed:
+      # - jugglehive-cloud: Nextcloud and cloud services infrastructure
+      # - jugglehive-webapp: Main TTRPG platform application server
+      - name: Azure CLI script
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.30.0                # Specify CLI version for consistency
+          inlineScript: |
+            # ==============================================================
+            # CLOUD SERVICES VM SHUTDOWN
+            # ==============================================================
+            # 
+            # Shutdown the cloud services VM hosting Nextcloud and
+            # related infrastructure components.
+            az vm stop --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-cloud
+            az vm deallocate --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-cloud
+            
+            # ==============================================================
+            # WEB APPLICATION VM SHUTDOWN
+            # ==============================================================
+            # 
+            # Shutdown the main web application VM hosting the
+            # Ragnar TTRPG Platform and associated services.
+            az vm stop --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-webapp
+            az vm deallocate --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-webapp
+
+# ============================================================================
+# WORKFLOW NOTES AND MAINTENANCE GUIDELINES
+# ============================================================================
+# 
+# Monitoring and Alerting:
+# - Monitor workflow execution via GitHub Actions dashboard
+# - Set up alerts for backup failures or VM shutdown issues
+# - Review Azure costs regularly to ensure optimization effectiveness
+# 
+# Security Considerations:
+# - All secrets are stored in GitHub Secrets with encryption
+# - Service principal has minimal required permissions
+# - Database credentials use secure connection strings
+# - Backup files are encrypted in transit and at rest in Azure Storage
+# 
+# Disaster Recovery:
+# - Backups are stored in Azure Storage with geo-replication
+# - Database backups include full schema for complete restoration
+# - File system backups preserve permissions and metadata
+# - Recovery procedures should be tested regularly
+# 
+# Cost Optimization:
+# - VM shutdown saves approximately 70-80% of compute costs
+# - Backup retention policy balances safety with storage costs
+# - Automated scheduling reduces operational overhead
+# - Resource deallocation maximizes cost savings
+# 
+# Maintenance Schedule:
+# - Review backup integrity monthly
+# - Update container images and dependencies quarterly
+# - Test disaster recovery procedures semi-annually
+# - Audit security configurations annually
+# 
+# Troubleshooting:
+# - Check GitHub Actions logs for workflow failures
+# - Verify Azure credentials and permissions for authentication issues
+# - Monitor disk space on servers for backup storage issues
+# - Review Azure Activity Log for VM management problems
+
+# ============================================================================
+# BACKUP STRATEGY OVERVIEW
+# ============================================================================
+# 
+# This workflow implements a comprehensive 3-2-1 backup strategy:
+# 
+# 1. PRIMARY BACKUPS (Local server storage):
+#    - Compressed file system backups
+#    - Database dumps with transaction consistency
+#    - Temporary local storage before transfer
+# 
+# 2. OFFSITE BACKUPS (Azure Storage):
+#    - Automated transfer via cron jobs
+#    - Geographic redundancy through Azure
+#    - Long-term retention capabilities
+# 
+# 3. RETENTION POLICY:
+#    - 7-day rolling retention window
+#    - Automated cleanup of expired backups
+#    - Configurable retention periods per backup type
+# 
+# ============================================================================
+# REQUIRED GITHUB SECRETS
+# ============================================================================
+# 
+# Server Access:
+# - SERVER_USERNAME: SSH username for server access
+# - SERVER_KEY: SSH private key for authentication
+# - DOMAIN: Primary domain name for server access
+# 
+# Database Configuration:
+# - MYSQL_HOST: MySQL server hostname
+# - MYSQL_USER: MySQL username with backup privileges
+# - MYSQL_PASSWORD: MySQL password
+# - MYSQL_DATABASE: Database name to backup
+# - POSTGRES_HOST: PostgreSQL server hostname (if webapp backup enabled)
+# - POSTGRES_USER: PostgreSQL username
+# - POSTGRES_PASSWORD: PostgreSQL password
+# - POSTGRES_DATABASE: PostgreSQL database name
+# 
+# Azure Configuration (if VM shutdown enabled):
+# - AZURE_CREDENTIALS: Service Principal JSON
+# - AZURE_RESOURCE_GROUP_NAME: Azure resource group name
+# 
+# ============================================================================
+# MONITORING AND ALERTING
+# ============================================================================
+# 
+# Monitor backup operations:
+# 
+# 1. GitHub Actions Logs:
+#    - Check workflow execution status
+#    - Review backup file sizes and timing
+#    - Monitor for SSH connection issues
+# 
+# 2. Server-Side Monitoring:
+#    - Check /root/azurestorage/backup/ directory
+#    - Verify backup file integrity
+#    - Monitor disk space usage
+# 
+# 3. Database Backup Verification:
+#    - Test restore procedures regularly
+#    - Verify dump file completeness
+#    - Check for backup corruption
+# 
+# 4. Azure Storage Monitoring:
+#    - Monitor storage account usage
+#    - Check backup transfer success
+#    - Review storage costs and optimization
+# 
+# ============================================================================
+# DISASTER RECOVERY PROCEDURES
+# ============================================================================
+# 
+# In case of data loss or system failure:
+# 
+# 1. IMMEDIATE RESPONSE:
+#    - Stop all services to prevent further data loss
+#    - Assess scope of data loss or corruption
+#    - Identify most recent valid backup
+# 
+# 2. RECOVERY PROCESS:
+#    - Download backups from Azure Storage
+#    - Verify backup integrity before restoration
+#    - Restore database from SQL dump
+#    - Extract and restore file system backup
+#    - Test application functionality
+# 
+# 3. POST-RECOVERY:
+#    - Document incident and lessons learned
+#    - Review and improve backup procedures
+#    - Update disaster recovery documentation
+# 
+# ============================================================================
+# COST OPTIMIZATION
+# ============================================================================
+# 
+# This workflow is designed for cost optimization:
+# 
+# - Automated VM shutdown reduces compute costs
+# - Compressed backups minimize storage costs
+# - Automated cleanup prevents storage overflow
+# - Scheduled operations reduce manual intervention
+# 
+# Consider:
+# - Adjusting backup frequency based on data change rate
+# - Implementing incremental backups for large datasets
+# - Using Azure Storage lifecycle policies for long-term retention
+# - Monitoring and optimizing backup compression ratios

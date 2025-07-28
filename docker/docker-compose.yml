@@ -1,37 +1,93 @@
+# ===============================================================================
+# Ragnar TTRPG Platform - Production Docker Compose Configuration
+# ===============================================================================
+# This configuration defines the production deployment stack with SSL support,
+# reverse proxy, and web application services. It's designed for production
+# environments with proper SSL certificate management and service orchestration.
+# 
+# Author: Stefano Sciacovelli (https://github.com/M04ph3u2)
+# DevOps Infrastructure Implementation
+# ===============================================================================
+
 services:
 
-  #Web services
+  # ============================================================================
+  # NGINX Reverse Proxy & SSL Termination
+  # ============================================================================
+  # Production-ready Nginx container handling:
+  # - SSL termination with Let's Encrypt certificates
+  # - Reverse proxy to application container
+  # - HTTP to HTTPS redirection
+  # - ACME challenge handling for certificate renewal
+  # ============================================================================
   nginx:
-    container_name: nginx
-    restart: always
-    image: nginx:1.24.0
+    container_name: nginx                # Container name for easy identification
+    restart: always                      # Always restart on failure for high availability
+    image: nginx:1.24.0                  # Specific version for reproducible deployments
     ports:
-      - "80:80"
-      - "443:443"
+      - "80:80"                          # HTTP port for ACME challenges and redirects
+      - "443:443"                        # HTTPS port for secure traffic
     volumes:
+      # Nginx configuration directory containing server blocks and SSL settings
       - ./web:/etc/nginx/
+      # Let's Encrypt SSL certificates directory (shared with certbot)
       - ../data/certbot/conf:/etc/letsencrypt
+      # ACME challenge directory for certificate verification
       - ../data/certbot/www:/var/www/certbot
+
+  # ============================================================================
+  # Let's Encrypt Certificate Management (Certbot)
+  # ============================================================================
+  # Automated SSL certificate generation and renewal service:
+  # - Generates 4096-bit RSA certificates for enhanced security
+  # - Supports multiple domains (primary + www subdomain)
+  # - Automatic renewal via cron or manual trigger
+  # - Webroot authentication method (HTTP-01 challenge)
+  # ============================================================================
   certbot:
-    container_name: certbot
-    image: certbot/certbot:v2.8.0
+    container_name: certbot              # Container name for certificate operations
+    image: certbot/certbot:v2.8.0        # Specific Certbot version for stability
     volumes:
+      # Shared certificate storage with nginx container
       - ../data/certbot/conf:/etc/letsencrypt
+      # ACME challenge response directory
       - ../data/certbot/www:/var/www/certbot
+    # Certificate generation command with production-ready parameters:
+    # --webroot: Use webroot authentication method
+    # --email: Contact email for Let's Encrypt notifications
+    # --rsa-key-size 4096: Enhanced security with 4096-bit keys
+    # --agree-tos: Automatically agree to Let's Encrypt Terms of Service
+    # --no-eff-email: Opt out of EFF promotional emails
+    # --force-renewal: Force renewal even if certificate is not yet due
     command: certonly --webroot -w /var/www/certbot --email "$CERTBOT_EMAIL" -d "$DOMAIN" -d "www.$DOMAIN" --rsa-key-size 4096 --agree-tos --no-eff-email --force-renewal
     depends_on:
-      - nginx
+      - nginx                            # Ensure nginx is running for ACME challenges
 
-  #Webapp service
+  # ============================================================================
+  # Web Application Container
+  # ============================================================================
+  # Main application container running the Ragnar TTRPG Platform:
+  # - Serves the web application on port 8080
+  # - Integrates with PostgreSQL database
+  # - Connects to Azure Storage for file management
+  # - Environment-based configuration for flexibility
+  # ============================================================================
   app:
-    container_name: app
-    image: $IMG_NAME:latest
-    restart: always
+    container_name: app                  # Application container identifier
+    image: $IMG_NAME:latest              # Dynamic image name from environment variable
+    restart: always                      # Ensure high availability with auto-restart
     environment:
+      # Application domain configuration for proper URL generation
       - DOMAIN=$DOMAIN
-      - POSTGRES_HOST=$POSTGRES_HOST
-      - POSTGRES_DATABASE=$POSTGRES_DATABASE
-      - POSTGRES_USER=$POSTGRES_USER
-      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
-      - AZURE_STORAGE_ACCOUNT_NAME=$AZURE_STORAGE_ACCOUNT_NAME
-      - AZURE_STORAGE_ACCOUNT_KEY=$AZURE_STORAGE_ACCOUNT_KEY
+      
+      # PostgreSQL database connection parameters
+      # These credentials should be managed via GitHub Secrets in production
+      - POSTGRES_HOST=$POSTGRES_HOST       # Database server hostname/IP
+      - POSTGRES_DATABASE=$POSTGRES_DATABASE # Target database name
+      - POSTGRES_USER=$POSTGRES_USER       # Database username
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD # Database password
+      
+      # Azure Storage integration for file management and backups
+      # Required for file uploads, avatar storage, and backup operations
+      - AZURE_STORAGE_ACCOUNT_NAME=$AZURE_STORAGE_ACCOUNT_NAME # Azure Storage account
+      - AZURE_STORAGE_ACCOUNT_KEY=$AZURE_STORAGE_ACCOUNT_KEY   # Storage access key
