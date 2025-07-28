@@ -1,4 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*
+ * Class Controller - Character Archetype Management
+ * 
+ * Manages character classes and archetypes in the TTRPG system.
+ * Handles class definitions, base stats, allowed items, skill trees,
+ * and class-specific progression rules. Supports multi-classing
+ * and class-based character creation mechanics.
+ */
+
+using Microsoft.AspNetCore.Mvc;
 using JuggleHiveWebapp.Server.Models;
 using JuggleHiveWebapp.Server.Services.Interfaces;
 

@@ -1,4 +1,28 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*
+ * User Controller - Authentication and User Management
+ * 
+ * This controller handles all user-related operations including registration, authentication,
+ * and user profile management for the TTRPG platform. It provides secure user management
+ * with proper validation and authentication flows.
+ * 
+ * Key Responsibilities:
+ * - User registration and account creation
+ * - User authentication and login management
+ * - User profile updates and data management
+ * - User account deletion and cleanup
+ * 
+ * API Endpoints:
+ * - GET /api/user - Retrieve all users (admin functionality)
+ * - GET /api/user/{id} - Retrieve specific user profile
+ * - POST /api/user - Register new user account
+ * - PUT /api/user/{id} - Update user profile
+ * - DELETE /api/user/{id} - Delete user account
+ * 
+ * Security Note: Consider implementing role-based authorization for user management
+ * operations to restrict access based on user permissions.
+ */
+
+using Microsoft.AspNetCore.Mvc;
 using JuggleHiveWebapp.Server.Models;
 using JuggleHiveWebapp.Server.Services.Interfaces;
 
