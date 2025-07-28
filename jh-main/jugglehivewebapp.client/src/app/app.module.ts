@@ -1,3 +1,22 @@
+/*
+ * Angular App Module - Main Application Configuration
+ * 
+ * This is the root module of the Angular application that bootstraps and configures
+ * the entire TTRPG platform frontend. It handles component declarations, service
+ * providers, routing configuration, and third-party library integrations.
+ * 
+ * Key Responsibilities:
+ * - Component registration and declarations
+ * - HTTP client configuration with interceptors
+ * - NgRx state management setup
+ * - Routing module integration
+ * - Custom directives and pipes registration
+ * 
+ * Architecture Pattern: Module-based organization with lazy loading support
+ * State Management: NgRx for complex state handling
+ * HTTP Handling: Angular HTTP client with custom interceptors
+ */
+
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';

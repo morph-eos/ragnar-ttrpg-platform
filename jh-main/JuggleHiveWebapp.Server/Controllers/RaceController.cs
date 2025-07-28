@@ -1,4 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*
+ * Race Controller - Character Species Management
+ * 
+ * Manages character races and species in the TTRPG system.
+ * Handles racial traits, stat bonuses, special abilities,
+ * regional associations, and race-specific skills.
+ * Supports character creation race selection mechanics.
+ */
+
+using Microsoft.AspNetCore.Mvc;
 using JuggleHiveWebapp.Server.Models;
 using JuggleHiveWebapp.Server.Services.Interfaces;
 

@@ -1,4 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*
+ * Item Controller - Equipment and Inventory Management
+ * 
+ * Manages all items, equipment, and inventory systems for the TTRPG platform.
+ * Handles weapons, armor, consumables, and treasure with their properties,
+ * effects, and interactions. Supports item creation, modification, and
+ * character inventory management operations.
+ */
+
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using JuggleHiveWebapp.Server.Models;
 using JuggleHiveWebapp.Server.Services.Interfaces;

@@ -1,4 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*
+ * Skill Controller - TTRPG Ability System Management
+ * 
+ * Manages character abilities, spells, and special powers in the TTRPG system.
+ * Handles skill definitions, prerequisites, effects, and progression mechanics.
+ * Provides CRUD operations for the complex skill system including skill trees,
+ * modifiers, and character-specific skill acquisitions.
+ */
+
+using Microsoft.AspNetCore.Mvc;
 using JuggleHiveWebapp.Server.Models;
 using JuggleHiveWebapp.Server.Services.Interfaces;
 
