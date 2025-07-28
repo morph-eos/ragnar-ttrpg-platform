@@ -1,42 +1,32 @@
 {
-  "name": "com.heatpeakstudio.frontend",
-  "version": "0.0.0",
+  "name": "HPS-Frontend",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "React TypeScript on Replit, using Vite bundler",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
-  "private": true,
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "@angular/animations": "^17.1.0",
-    "@angular/common": "^17.1.0",
-    "@angular/compiler": "^17.1.0",
-    "@angular/core": "^17.1.0",
-    "@angular/forms": "^17.1.0",
-    "@angular/platform-browser": "^17.1.0",
-    "@angular/platform-browser-dynamic": "^17.1.0",
-    "@angular/router": "^17.1.0",
-    "@ngrx/store": "^17.1.0",
-    "rxjs": "~7.8.0",
-    "tslib": "^2.3.0",
-    "zone.js": "~0.14.3"
+    "@headlessui/react": "^1.7.16",
+    "@material-tailwind/react": "^2.0.7",
+    "axios": "^1.4.0",
+    "react-router-dom": "^6.14.2"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^17.1.0",
-    "@angular/cli": "^17.1.0",
-    "@angular/compiler-cli": "^17.1.0",
-    "@types/jasmine": "~5.1.0",
-    "autoprefixer": "^10.4.17",
-    "jasmine-core": "~5.1.0",
-    "karma": "~6.4.0",
-    "karma-chrome-launcher": "~3.2.0",
-    "karma-coverage": "~2.2.0",
-    "karma-jasmine": "~5.1.0",
-    "karma-jasmine-html-reporter": "~2.1.0",
-    "postcss": "^8.4.33",
-    "tailwindcss": "^3.4.1",
-    "typescript": "~5.3.2"
+    "@types/react": "^18.0.27",
+    "@types/react-dom": "^18.0.10",
+    "@vitejs/plugin-react": "^3.1.0",
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.27",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tailwindcss": "^3.3.3",
+    "typescript": "^4.9.5",
+    "vite": "^4.1.1"
   }
 }
