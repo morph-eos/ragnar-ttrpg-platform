@@ -24,7 +24,7 @@ This was a **zero-budget, deliberately over-ambitious** project, and the rebuild
 - the **transition** to Spring Boot + Angular (`hp-jh-transition`) was abandoned mid-migration once a better-fitting stack (.NET) became clear;
 - the **modern** .NET 8 + Angular 18 build (`jh-main`) is the furthest-developed, but ran out of time and funding before authentication and production hardening.
 
-It is published as evidence of technical range, architectural decision-making, and DevOps breadth across a full rebuild cycle — not as a finished product. For projects taken end-to-end, see my [other repositories](https://github.com/morph-eos?tab=repositories).
+It is published as evidence of technical range, architectural decision-making, and DevOps breadth across a full rebuild cycle — not as a finished product.
 
 ## Evolution
 
