@@ -23,7 +23,7 @@ CI/CD pipeline and infrastructure management for the Ragnar TTRPG Platform, impl
 
 ## Project Structure
 
-```
+```text
 ├── .github/workflows/
 │   ├── deploy.yml       # Deployment orchestration (ACTIVE)
 │   ├── startvm.yml      # Azure VM startup (DISABLED)
@@ -91,3 +91,7 @@ Installs: Docker + Compose, Azure CLI, PostgreSQL 16 client, Azure File Storage 
 ## License
 
 [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) — For commercial inquiries, contact the development team.
+
+---
+
+<sub>Part of the **[Ragnar TTRPG Platform](../README.md)** monorepo — see the root README for the full evolution across all phases.</sub>

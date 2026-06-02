@@ -42,7 +42,7 @@ Key migration patterns:
 
 ## Project Structure
 
-```
+```text
 ├── backend/
 │   ├── src/main/java/com/heatpeakstudio/backend/
 │   │   ├── BackendApplication.java   # Spring Boot main class
@@ -96,3 +96,7 @@ Windows users can use `development/Start_Backend.bat` and `development/Start_Fro
 ## License
 
 [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) — For commercial inquiries, contact the development team.
+
+---
+
+<sub>Part of the **[Ragnar TTRPG Platform](../README.md)** monorepo — see the root README for the full evolution across all phases.</sub>

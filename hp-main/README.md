@@ -12,9 +12,18 @@
 
 ## Overview
 
-The original MERN stack implementation of the Ragnar TTRPG Platform, developed by **HeatPeak Studio**. This is the foundational phase of the platform, featuring document-based data modeling, AI-generated reference images, and a fully functional character management system.
+The original MERN stack implementation of the Ragnar TTRPG Platform, developed by **HeatPeak Studio**. This is the foundational phase of the platform, featuring document-based data modeling, AI-generated reference images, and a browser-based character/rules showcase.
 
 **[Live Demo](https://ragnar-legacy.onrender.com/rpg/)** — Initial loading may take 30-60 seconds (free hosting tier).
+
+> **Repository note — what you're looking at.** This directory surfaces the
+> **original MERN prototype** that HeatPeak Studio built first. The `hp-main`
+> branch's own commit history *also* contains the studio's later experiment
+> with a Spring Boot + Angular rewrite, which was eventually archived; that
+> transition is presented, fully assembled, in
+> [`../hp-jh-transition/`](../hp-jh-transition/). So if `git log` here surfaces
+> Java or Angular commits, that is the same HeatPeak repository's history —
+> this folder deliberately presents the MERN codebase that came first.
 
 ## Architecture
 
@@ -29,13 +38,13 @@ The original MERN stack implementation of the Ragnar TTRPG Platform, developed b
 
 Key features:
 
-- **Character Management**: Dynamic character sheets, classes with progression, races with traits, game states
+- **Character & Rules Data**: Character sheets, classes with progression, races with traits, and game states, modeled as Mongoose documents
 - **AI Reference Images**: AI-generated portraits for characters, races, and states stored in `backend/static/rpg/references/` with MongoDB document integration via `references` field arrays
-- **Session-based Authentication**: User registration, login, character ownership
+- **Security Hardening**: Helmet.js headers and CORS configured in `app.js` (note: end-user authentication was scaffolded but never implemented — `Private.jsx` is an empty stub)
 
 ## Project Structure
 
-```
+```text
 ├── backend/
 │   ├── app.js                  # Express application with security middleware
 │   ├── apiRouter.js            # Central API routing
@@ -51,7 +60,7 @@ Key features:
 │   │       ├── Sheets.jsx      # Character sheet management
 │   │       ├── Classes.jsx     # Character classes and abilities
 │   │       ├── Showcase.jsx    # Races and states display
-│   │       └── Private.jsx     # Authentication and registration
+│   │       └── Private.jsx     # Empty stub (auth was planned, not built)
 │   ├── vite.config.js
 │   └── tailwind.config.js
 ├── .github/workflows/main.yml  # CI/CD pipeline
@@ -82,3 +91,7 @@ cd frontend && npm install && npm run dev
 ## License
 
 [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) — For commercial inquiries, contact the development team.
+
+---
+
+<sub>Part of the **[Ragnar TTRPG Platform](../README.md)** monorepo — see the root README for the full evolution across all phases.</sub>

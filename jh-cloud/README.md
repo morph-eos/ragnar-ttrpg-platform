@@ -29,7 +29,7 @@ Services:
 
 ## Project Structure
 
-```
+```text
 ├── docker-compose.yml       # Production: Nginx + Certbot + Nextcloud
 ├── web/
 │   └── nginx.conf           # Production Nginx (SSL + reverse proxy)
@@ -90,3 +90,7 @@ Data persisted in `../data/nextcloud` (app data) and `../data/certbot` (certific
 ## License
 
 [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) — For commercial inquiries, contact the development team.
+
+---
+
+<sub>Part of the **[Ragnar TTRPG Platform](../README.md)** monorepo — see the root README for the full evolution across all phases.</sub>

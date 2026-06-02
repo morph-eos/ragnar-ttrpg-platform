@@ -12,7 +12,7 @@
 
 This is a **unified portfolio monorepo** that gathers the complete evolution of the **Ragnar TTRPG Platform** — a project that set out to bring tabletop role-playing games into the browser, and that was rebuilt three times as the team and its technology matured.
 
-Rather than living in five separate repositories, every implementation is preserved here as a subdirectory **with its full, original commit history merged into `main`** (via subtree merges). The five source branches also remain available unchanged for reference. In other words: `git log -- jh-main/` shows the real 42-commit history of the modern app, not a single squashed import.
+Rather than living in five separate repositories, every implementation is preserved here as a subdirectory **with its full, original commit history merged into `main`** (via subtree merges). The five source branches also remain available unchanged for reference. In other words: `git log -- jh-main/` walks the modern app's real, full commit history (back to its first commit), not a single squashed import.
 
 > **Status:** archived. The platform is no longer under active development; it is published as an engineering portfolio.
 
@@ -35,7 +35,7 @@ The application was rebuilt across three phases, supported by two infrastructure
 | **Frontend** | React 18 + Vite 4 | Angular 17 + NgRx 17 | Angular 18 + NgRx 18 |
 | **Backend** | Node.js + Express 4 | Spring Boot 3.2 (Java 17) + Maven | .NET 8 + EF Core 8 |
 | **Database** | MongoDB + Mongoose 7 | PostgreSQL + Spring Data JPA | PostgreSQL (Npgsql) |
-| **Cloud / Assets** | Static `references/` images | — | Azure Blob & File Storage |
+| **Cloud / Assets** | Static `references/` images | — | Azure File Storage (via SAS) |
 | **CI/CD** | GitHub Actions → Docker Hub | Dockerfile + GitHub Actions | GitHub Actions → GHCR |
 
 > All versions, frameworks, and integrations in this table are taken directly from the committed `package.json` / `pom.xml` / `.csproj` and workflow files of each phase. Authentication was never implemented beyond CORS + Helmet hardening on the legacy backend, so no auth claims are made here.
@@ -47,7 +47,7 @@ Supporting infrastructure:
 
 ## Project Structure
 
-```
+```text
 ├── hp-main/              # Legacy MERN implementation (HeatPeak Studio)
 ├── hp-jh-transition/     # Spring Boot + Angular transition phase
 ├── jh-main/              # Modern Angular / .NET 8 implementation (Juggle Hive)
@@ -119,7 +119,7 @@ cd jh-cloud/             # Cloud services
   </table>
 </div>
 
-- **Stefano Sciacovelli** ([GitHub](https://github.com/M04ph3u2)) — Lead Developer, DevOps, Project Manager
+- **Stefano Sciacovelli** ([GitHub](https://github.com/morph-eos)) — Lead Developer, DevOps, Project Manager
 - **Paolo Nicola Leovino** ([LinkedIn](https://www.linkedin.com/in/paolonicolaleovino/)) — Game Designer, Project Manager
 - **Alessia Grassi** ([LinkTree](https://linktr.ee/alessiagrassi)) — UI/UX Designer
 - **Davide Gritta** ([GitHub](https://github.com/GrittaGit)) — Backend Developer, Database Designer (`jh-main`)
