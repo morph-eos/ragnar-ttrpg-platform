@@ -127,11 +127,11 @@ cd jh-cloud/             # Cloud services
   </table>
 </div>
 
-- **Stefano Sciacovelli** ([GitHub](https://github.com/morph-eos)) — Lead Developer, DevOps, Project Manager
+- **Stefano Sciacovelli** ([GitHub](https://github.com/morph-eos) · [LinkedIn](https://www.linkedin.com/in/stefanosciacovelli)) — Lead Developer, DevOps, Project Manager
 - **Paolo Nicola Leovino** ([LinkedIn](https://www.linkedin.com/in/paolonicolaleovino/)) — Game Designer, Project Manager
-- **Alessia Grassi** ([LinkTree](https://linktr.ee/alessiagrassi)) — UI/UX Designer
-- **Davide Gritta** ([GitHub](https://github.com/GrittaGit)) — Backend Developer, Database Designer (`jh-main`)
-- **Gianluca Rossetti** ([GitHub](https://github.com/Ross9519)) — Full-Stack Developer (`jh-main`)
+- **Alessia Grassi** ([LinkTree](https://linktr.ee/alessiagrassi) · [LinkedIn](https://www.linkedin.com/in/alessia-grassi-game-artist)) — UI/UX Designer
+- **Davide Gritta** ([GitHub](https://github.com/GrittaGit) · [LinkedIn](https://www.linkedin.com/in/davide-gritta-18a6812ab)) — Backend Developer, Database Designer (`jh-main`)
+- **Gianluca Rossetti** ([GitHub](https://github.com/Ross9519) · [LinkedIn](https://www.linkedin.com/in/gianluca-rossetti-6b1489264)) — Full-Stack Developer (`jh-main`)
 
 ## License
 

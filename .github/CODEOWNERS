@@ -1,0 +1,27 @@
+# CODEOWNERS — Ragnar TTRPG Platform
+#
+# GitHub recognizes a single CODEOWNERS file (this one); ownership is expressed
+# per path below. Owners are derived from the actual contributors of each phase.
+#
+# Designers Alessia Grassi (UI/UX) and Paolo Nicola Leovino (game design)
+# contributed to the project and are credited in the READMEs, but are not
+# GitHub code owners (no code contributions / GitHub handles in scope).
+
+# Default owner: project lead, DevOps, and author of the unified history
+*                       @morph-eos
+
+# Top-level docs & repository scaffolding
+/README.md              @morph-eos
+/CONTRIBUTING.md         @morph-eos
+/.github/               @morph-eos
+
+# Legacy MERN prototype (HeatPeak Studio era)
+/hp-main/               @morph-eos
+/hp-jh-transition/      @morph-eos
+
+# Modern application (Juggle Hive) — three-developer effort
+/jh-main/               @morph-eos @GrittaGit @Ross9519
+
+# Infrastructure
+/jh-devops/             @morph-eos
+/jh-cloud/              @morph-eos

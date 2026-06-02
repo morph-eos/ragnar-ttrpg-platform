@@ -100,10 +100,10 @@ docker run -p 80:8080 ragnar-ttrpg-platform
 
 ## Development Team
 
-- **Davide Gritta** ([GitHub](https://github.com/GrittaGit)) — Backend Developer, Database Designer
-- **Gianluca Rossetti** ([GitHub](https://github.com/Ross9519)) — Full-Stack Developer
-- **Stefano Sciacovelli** ([GitHub](https://github.com/morph-eos)) — DevOps, Automation
-- **Alessia Grassi** ([LinkTree](https://linktr.ee/alessiagrassi)) — UI/UX Designer (Figma)
+- **Davide Gritta** ([GitHub](https://github.com/GrittaGit) · [LinkedIn](https://www.linkedin.com/in/davide-gritta-18a6812ab)) — Backend Developer, Database Designer
+- **Gianluca Rossetti** ([GitHub](https://github.com/Ross9519) · [LinkedIn](https://www.linkedin.com/in/gianluca-rossetti-6b1489264)) — Full-Stack Developer
+- **Stefano Sciacovelli** ([GitHub](https://github.com/morph-eos) · [LinkedIn](https://www.linkedin.com/in/stefanosciacovelli)) — DevOps, Automation
+- **Alessia Grassi** ([LinkTree](https://linktr.ee/alessiagrassi) · [LinkedIn](https://www.linkedin.com/in/alessia-grassi-game-artist)) — UI/UX Designer (Figma)
 - **Paolo Nicola Leovino** ([LinkedIn](https://www.linkedin.com/in/paolonicolaleovino/)) — Game Designer
 
 ## License
