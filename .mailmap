@@ -1,0 +1,15 @@
+# Canonical author identities for the Ragnar TTRPG Platform.
+# Maps the many git identities used across the original repositories to one
+# name + email per person, so `git shortlog -sne` and `git log` show a clean,
+# accurate contributor list. Format:
+#   Proper Name <proper@email> <commit@email>
+
+# Stefano Sciacovelli — Lead Developer, DevOps, Project Manager
+
+# Davide Gritta — Backend Developer, Database Designer (jh-main)
+Davide Gritta <gritta.commercial@gmail.com> <gritta.commercial@gmail.com>
+Davide Gritta <gritta.commercial@gmail.com> <157188922+GrittaGit@users.noreply.github.com>
+
+# Gianluca Rossetti — Full-Stack Developer (jh-main)
+Gianluca Rossetti <gianross05@yahoo.com> <gianross05@yahoo.com>
+Gianluca Rossetti <gianross05@yahoo.com> <135109281+Ross9519@users.noreply.github.com>

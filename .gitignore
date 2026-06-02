@@ -1,0 +1,50 @@
+# Global .gitignore for the unified repository.
+# Each sub-project also has its own .gitignore for stack-specific artifacts.
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.user
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary folders
+tmp/
+temp/
+
+# Build outputs (generic)
+build/
+dist/
+out/
+target/
+
+# .NET build artifacts
+[Bb]in/
+[Oo]bj/
+*.dll
+*.exe
+
+# Dependencies
+node_modules/
+
+# Environment / secrets
+.env
+.env.local
+*.local
