@@ -10,7 +10,7 @@
 # Purpose: Automates the installation of Docker, Azure CLI, database clients,
 #          and Azure File Storage mounting for the TTRPG platform infrastructure.
 # 
-# Author: Stefano Sciacovelli (https://github.com/M04ph3u2)
+# Author: Stefano Sciacovelli (https://github.com/morph-eos)
 # DevOps Infrastructure Implementation
 # ===============================================================================
 

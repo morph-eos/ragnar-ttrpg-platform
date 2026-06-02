@@ -14,7 +14,7 @@
 # 
 # Schedule: Daily at 21:30 UTC (customizable via cron expression)
 # Architecture: Multi-stage backup with Azure integration
-# Author: Stefano Sciacovelli (https://github.com/M04ph3u2)
+# Author: Stefano Sciacovelli (https://github.com/morph-eos)
 # DevOps Infrastructure Implementation
 # ============================================================================
 
