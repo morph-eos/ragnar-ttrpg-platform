@@ -12,7 +12,7 @@
 
 ## Overview
 
-The production-ready implementation of the Ragnar TTRPG Platform, developed by the complete **Juggle Hive** team. This branch represents the culmination of the platform's technical evolution, featuring a modern .NET Core API, Angular SPA, PostgreSQL database, and Azure cloud integration.
+The most advanced implementation of the Ragnar TTRPG Platform, developed by the complete **Juggle Hive** team. This branch represents the culmination of the platform's technical evolution, featuring a modern .NET 8 API, an Angular SPA, a PostgreSQL database, and Azure File Storage for asset hosting.
 
 ## Architecture
 
@@ -20,21 +20,26 @@ The production-ready implementation of the Ragnar TTRPG Platform, developed by t
 |-----------|-----------|
 | API Server | .NET Core 8 + Entity Framework Core |
 | Frontend | Angular 18 + TypeScript + TailwindCSS |
-| Database | PostgreSQL 16 |
-| Cloud | Azure Blob Storage, Azure App Service |
-| Auth | Azure AD B2C |
-| CI/CD | GitHub Actions |
-| Container | Docker (multi-stage build) |
+| Database | PostgreSQL (Npgsql provider) |
+| Cloud / Storage | Azure File Storage (asset hosting via SAS) |
+| CI/CD | GitHub Actions → GHCR image, deploy dispatched to an Azure VM (see `jh-devops`) |
+| Container | Docker (multi-stage build, 5 stages) |
 
 Key capabilities:
 
 - Complete TTRPG game mechanics (characters, skills, items, classes, regions)
-- Azure cloud integration (storage, authentication, deployment)
+- Azure File Storage integration with SAS-based asset access (`AzureFileService`)
 - RESTful API with 23 controllers, 22 models, 22 service interfaces
+
+> Development on this build ceased before authentication and production
+> hardening — it is the furthest-developed phase of a zero-budget project
+> that ran out of time and funding. No end-user authentication is
+> implemented; the `User` entity and controller exist, but login/identity
+> was not built.
 
 ## Project Structure
 
-```
+```text
 ├── JuggleHiveWebapp.Server/
 │   ├── Controllers/              # API controllers (23 files)
 │   ├── Models/                   # Entity models + DB context (22 files)
@@ -98,12 +103,16 @@ docker run -p 80:8080 ragnar-ttrpg-platform
 
 ## Development Team
 
-- **Davide Gritta** ([GitHub](https://github.com/GrittaGit)) — Backend Developer, Database Designer
-- **Gianluca Rossetti** ([GitHub](https://github.com/Ross9519)) — Full-Stack Developer
-- **Stefano Sciacovelli** ([GitHub](https://github.com/M04ph3u2)) — DevOps, Automation
-- **Alessia Grassi** ([LinkTree](https://linktr.ee/alessiagrassi)) — UI/UX Designer (Figma)
+- **Davide Gritta** ([GitHub](https://github.com/GrittaGit) · [LinkedIn](https://www.linkedin.com/in/davide-gritta-18a6812ab)) — Backend Developer, Database Designer
+- **Gianluca Rossetti** ([GitHub](https://github.com/Ross9519) · [LinkedIn](https://www.linkedin.com/in/gianluca-rossetti-6b1489264)) — Full-Stack Developer
+- **Stefano Sciacovelli** ([GitHub](https://github.com/morph-eos) · [LinkedIn](https://www.linkedin.com/in/stefanosciacovelli)) — DevOps, Automation
+- **Alessia Grassi** ([LinkTree](https://linktr.ee/alessiagrassi) · [LinkedIn](https://www.linkedin.com/in/alessia-grassi-game-artist)) — UI/UX Designer (Figma)
 - **Paolo Nicola Leovino** ([LinkedIn](https://www.linkedin.com/in/paolonicolaleovino/)) — Game Designer
 
 ## License
 
 [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) — For commercial inquiries, contact the development team.
+
+---
+
+<sub>Part of the **[Ragnar TTRPG Platform](https://github.com/morph-eos/ragnar-ttrpg-platform)** monorepo — see the root README for the full evolution across all phases.</sub>
