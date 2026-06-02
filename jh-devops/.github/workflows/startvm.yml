@@ -1,0 +1,164 @@
+# ===============================================================================
+# RAGNAR TTRPG PLATFORM - AZURE VM STARTUP AUTOMATION
+# ===============================================================================
+# 
+# This workflow provides automated startup capabilities for Azure VMs used in
+# the Ragnar TTRPG Platform infrastructure. It handles VM lifecycle management
+# with proper authentication and error handling.
+# 
+# Trigger: Repository dispatch event 'jugglehive-disabled' (currently disabled)
+# Purpose: Automated Azure VM startup for infrastructure scaling
+# Integration: Azure CLI with Service Principal authentication
+# 
+# Author: Stefano Sciacovelli (https://github.com/M04ph3u2)
+# DevOps Infrastructure Implementation
+# ===============================================================================
+
+name: startvm
+
+# ============================================================================
+# WORKFLOW TRIGGERS
+# ============================================================================
+# 
+# This workflow can be triggered in two ways:
+# 1. Scheduled execution (commented out) - for automatic daily startup
+# 2. Repository dispatch - for on-demand startup via API calls
+# 
+# The repository dispatch method allows external systems, CI/CD pipelines,
+# or manual API calls to start VMs when needed, providing flexibility
+# for cost management and operational control.
+on:
+  # Scheduled startup at 6:00 AM UTC daily (currently disabled for cost control)
+  #schedule:
+  #  - cron: '00 06 * * *'            # Runs at 06:00 UTC every day
+  
+  # Repository dispatch trigger for on-demand VM startup
+  # Currently uses 'jugglehive-disabled' event type (should be renamed to 'jugglehive-startvm')
+  repository_dispatch:
+    types: [jugglehive-disabled]         # Event type for triggering VM startup
+
+jobs:
+  # ==========================================================================
+  # VM STARTUP JOB
+  # ==========================================================================
+  # 
+  # Handles the startup process for all Azure VMs in the platform
+  # infrastructure. Uses Azure CLI to interact with Azure Resource Manager
+  # and start VMs in the configured resource group.
+  startvm:
+    runs-on: ubuntu-latest               # Use latest Ubuntu runner for Azure CLI compatibility
+
+    steps: 
+
+      # ======================================================================
+      # STEP 1: AZURE AUTHENTICATION
+      # ======================================================================
+      # 
+      # Authenticates with Azure using Service Principal credentials stored
+      # in GitHub Secrets. This provides programmatic access to Azure
+      # Resource Manager APIs for VM management operations.
+      - name: Azure Login
+        uses: Azure/login@v1             # Official Azure login action
+        with:
+          # Azure Service Principal credentials in JSON format
+          # Required format: {"clientId":"xxx","clientSecret":"xxx","subscriptionId":"xxx","tenantId":"xxx"}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # ======================================================================
+      # STEP 2: VM STARTUP EXECUTION
+      # ======================================================================
+      # 
+      # Executes Azure CLI commands to start the platform VMs. This step
+      # starts both the cloud services VM and the web application VM
+      # concurrently for optimal startup time.
+      - name: Azure CLI script
+        uses: azure/CLI@v1               # Official Azure CLI action
+        with:
+          azcliversion: 2.30.0           # Specific Azure CLI version for consistency
+          inlineScript: |
+            # Start Nextcloud and cloud services VM
+            # This VM hosts file storage, backup services, and collaboration tools
+            az vm start --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-cloud
+            
+            # Start main web application VM
+            # This VM hosts the Ragnar TTRPG web application and backend APIs
+            az vm start --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --name jugglehive-webapp
+
+# ============================================================================
+# USAGE INSTRUCTIONS
+# ============================================================================
+# 
+# Manual Trigger via GitHub API:
+# curl -X POST \
+#   -H "Accept: application/vnd.github.v3+json" \
+#   -H "Authorization: token $GITHUB_TOKEN" \
+#   https://api.github.com/repos/owner/ragnar-ttrpg-platform/dispatches \
+#   -d '{"event_type":"jugglehive-disabled"}'
+# 
+# Manual Trigger via GitHub CLI:
+# gh api repos/owner/ragnar-ttrpg-platform/dispatches \
+#   --method POST \
+#   --field event_type=jugglehive-disabled
+# 
+# Integration with Other Workflows:
+# - name: Start VMs
+#   uses: peter-evans/repository-dispatch@v2
+#   with:
+#     token: ${{ secrets.REPO_ACCESS_TOKEN }}
+#     repository: owner/ragnar-ttrpg-platform
+#     event-type: jugglehive-disabled
+# 
+# ============================================================================
+# REQUIRED GITHUB SECRETS
+# ============================================================================
+# 
+# AZURE_CREDENTIALS: Service Principal JSON with VM management permissions
+# Format: {
+#   "clientId": "service-principal-client-id",
+#   "clientSecret": "service-principal-secret",
+#   "subscriptionId": "azure-subscription-id",
+#   "tenantId": "azure-tenant-id"
+# }
+# 
+# AZURE_RESOURCE_GROUP_NAME: Name of Azure Resource Group containing VMs
+# Example: "ragnar-production-resources"
+# 
+# ============================================================================
+# AZURE PERMISSIONS REQUIRED
+# ============================================================================
+# 
+# The Service Principal must have the following permissions:
+# - Virtual Machine Contributor (or higher) on the resource group
+# - Reader access to the subscription (for resource discovery)
+# 
+# Minimum required actions:
+# - Microsoft.Compute/virtualMachines/start/action
+# - Microsoft.Compute/virtualMachines/read
+# 
+# ============================================================================
+# COST OPTIMIZATION NOTES
+# ============================================================================
+# 
+# This workflow is designed for cost optimization by allowing programmatic
+# control of VM startup. Consider:
+# 
+# - Schedule startup only during business hours or active development periods
+# - Coordinate with stopvm.yml workflow for complete lifecycle management
+# - Monitor Azure costs and adjust VM sizes based on actual usage
+# - Use Azure Advisor recommendations for additional cost optimizations
+# 
+# ============================================================================
+# MONITORING AND TROUBLESHOOTING
+# ============================================================================
+# 
+# Monitor VM startup:
+# - Check workflow execution logs in GitHub Actions
+# - Verify VM status in Azure Portal
+# - Use Azure CLI to check VM power state:
+#   az vm get-instance-view --resource-group $RG --name $VM_NAME --query instanceView.statuses
+# 
+# Common issues:
+# - Service Principal authentication failures
+# - Insufficient permissions on resource group
+# - VM already running (not an error, but logs will show)
+# - Azure service outages or regional issues

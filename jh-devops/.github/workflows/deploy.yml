@@ -1,0 +1,363 @@
+# ===============================================================================
+# RAGNAR TTRPG PLATFORM - DEPLOYMENT ORCHESTRATION WORKFLOW
+# ===============================================================================
+# 
+# This workflow handles the automated deployment of the Ragnar TTRPG Platform
+# across multiple repositories and environments. It provides a centralized
+# deployment system with Azure integration and SSL certificate management.
+# 
+# Trigger: Repository dispatch event with type 'jugglehive-deploy'
+# Purpose: Multi-repository deployment automation with environment configuration
+# Target: Azure VM with Docker containerization
+# 
+# Author: Stefano Sciacovelli (https://github.com/M04ph3u2)
+# DevOps Infrastructure Implementation
+# ===============================================================================
+
+name: deploy
+
+# ============================================================================
+# WORKFLOW TRIGGERS
+# ============================================================================
+# 
+# This workflow is triggered via GitHub's Repository Dispatch API, allowing
+# other repositories and external systems to trigger deployments dynamically.
+# The client_payload contains deployment parameters:
+# - service: Target repository/service name to deploy
+# - server: Target deployment server hostname
+on:
+  repository_dispatch:
+    types: [jugglehive-deploy]            # Specific event type for deployment triggers
+
+jobs:
+
+  # ==========================================================================
+  # DEPLOYMENT JOB
+  # ==========================================================================
+  # 
+  # Handles the complete deployment pipeline from code acquisition to
+  # service startup on the target Azure VM infrastructure.
+  deploy:
+    runs-on: ubuntu-latest                # Use latest Ubuntu runner for stability
+
+    steps:
+
+    # ========================================================================
+    # STEP 1: SOURCE CODE ACQUISITION
+    # ========================================================================
+    # 
+    # Acquires the source code from the target repository specified in the
+    # repository dispatch payload. This allows deploying any service in the
+    # JuggleHive ecosystem without hardcoding repository names.
+    - name: Checkout original code
+      uses: actions/checkout@v4           # Use latest checkout action
+      with:
+        # Dynamic repository selection based on dispatch payload
+        repository: ${{ github.repository_owner }}/${{ github.event.client_payload.service }} 
+        token: ${{ secrets.CONTENTS_PAT }} # Personal Access Token with contents:read permission
+    
+    # ========================================================================
+    # STEP 2: CODE PRESERVATION AND WORKSPACE PREPARATION
+    # ========================================================================
+    # 
+    # Preserves the original source code by copying it to a separate directory
+    # and clears the workspace to prepare for deployment configuration overlay.
+    - name: Save original code in another directory
+      run: |
+        # Copy source code to preserve original structure
+        cp -rf ./ ../${{ github.event.client_payload.service }}
+        # Clear current workspace for deployment configuration
+        rm -rf ./*
+      
+    # ========================================================================
+    # STEP 3: DEPLOYMENT CONFIGURATION ACQUISITION
+    # ========================================================================
+    # 
+    # Checks out the deployment configuration from the current repository
+    # (jh-devops branch) which contains Docker configurations, scripts,
+    # and deployment templates.
+    - name: Checkout the deployment code
+      uses: actions/checkout@v4
+
+    # ========================================================================
+    # STEP 4: CODE AND CONFIGURATION INTEGRATION
+    # ========================================================================
+    # 
+    # Integrates the source code with deployment configuration, creating
+    # a unified deployment package ready for transfer to the target server.
+    - name: Move original code for deploy
+      run: |
+        # Move source code into deployment structure
+        mv ../${{ github.event.client_payload.service }}/ ./${{ github.event.client_payload.service }}
+        # List contents for verification
+        ls        
+
+    # ========================================================================
+    # STEP 5: TARGET SERVER ENVIRONMENT CLEANUP
+    # ========================================================================
+    # 
+    # Prepares the target server by cleaning up previous deployments and
+    # ensuring proper file permissions for the deployment process.
+    - name: Clean the environment
+      uses: appleboy/ssh-action@master   # SSH action for remote server access
+      with:
+        host: ${{ github.event.client_payload.server }}    # Target server from dispatch payload
+        username: ${{ secrets.SERVER_USERNAME }}           # SSH username from secrets
+        key: ${{ secrets.SERVER_KEY }}                     # SSH private key from secrets
+        script: |
+          # Ensure proper ownership of deployment directory
+          sudo chown -R ${{ secrets.SERVER_USERNAME }}:${{ secrets.SERVER_USERNAME }} /root
+          # Remove previous deployment artifacts
+          sudo rm -rf /root/docker
+
+    # ========================================================================
+    # STEP 6: CODE TRANSFER TO TARGET SERVER
+    # ========================================================================
+    # 
+    # Transfers the complete deployment package (source code + configuration)
+    # to the target server using secure SCP (SSH Copy Protocol).
+    - name: Copy repository to the server
+      uses: appleboy/scp-action@master   # SCP action for secure file transfer
+      with:
+        host: ${{ github.event.client_payload.server }}    # Target server hostname
+        username: ${{ secrets.SERVER_USERNAME }}           # SSH username
+        key: ${{ secrets.SERVER_KEY }}                     # SSH private key
+        source: "."                                         # Transfer all files in workspace
+        target: "/root/repo"                               # Target directory on server
+    # ========================================================================
+    # STEP 7: SERVER-SIDE FILE ORGANIZATION
+    # ========================================================================
+    # 
+    # Reorganizes the transferred files on the server, handling different
+    # deployment types (cloud infrastructure vs. docker applications) and
+    # preparing the final deployment structure.
+    - name: Reorganize files
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ github.event.client_payload.server }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        key: ${{ secrets.SERVER_KEY }}
+        script: |
+          # Handle different deployment types:
+          # - cloud: Nextcloud and infrastructure services
+          # - docker: General containerized applications
+          if [ -d "/root/repo/cloud" ]; then
+            sudo mv /root/repo/cloud /root/docker
+          else
+            sudo mv /root/repo/docker /root/docker
+          fi
+          # Clean up temporary repository directory
+          sudo rm -rf /root/repo
+
+    # ========================================================================
+    # STEP 8: MAIN DEPLOYMENT EXECUTION
+    # ========================================================================
+    # 
+    # Executes the main deployment logic including:
+    # - Environment variable configuration from GitHub Secrets
+    # - Dynamic configuration file updates
+    # - SSL certificate management
+    # - Container lifecycle management
+    # - Service startup and verification
+    - name: Actual deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ github.event.client_payload.server }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        key: ${{ secrets.SERVER_KEY }}
+        script: |
+          # ================================================================
+          # ENVIRONMENT CONFIGURATION MANAGEMENT
+          # ================================================================
+          # 
+          # Create/update system environment file with secrets from GitHub
+          # This approach ensures secrets are available to Docker Compose
+          # and other system processes without exposing them in process lists.
+          
+          sudo touch /etc/environment
+          
+          # Define array of all required environment variables/secrets
+          # Each secret corresponds to a specific service configuration need
+          secrets_array=("CERTBOT_EMAIL" "MYSQL_DATABASE" "MYSQL_HOST" "MYSQL_DATABASE" "MYSQL_USER" "MYSQL_PASSWORD" "POSTGRES_HOST" "POSTGRES_DATABASE" "POSTGRES_HOST" "POSTGRES_DATABASE" "POSTGRES_USER" "POSTGRES_PASSWORD" "NEXTCLOUD_ADMIN_USER" "NEXTCLOUD_ADMIN_PASSWORD" "DOMAIN" "AZURE_STORAGE_ACCOUNT_KEY" "AZURE_STORAGE_ACCOUNT_NAME" "IMG_NAME")
+          
+          # Process each secret and inject into system environment
+          for secret in "${secrets_array[@]}"; do
+            # Remove existing entry to prevent duplicates
+            sudo sed -i "/^${secret}=/d" /etc/environment || true
+            
+            # Add secret to environment based on type
+            case "${secret}" in
+              "CERTBOT_EMAIL")
+                # Email for Let's Encrypt certificate registration
+                echo "CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}" | sudo tee -a /etc/environment
+                ;;
+              "MYSQL_DATABASE")
+                # MySQL database name for application data
+                echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}" | sudo tee -a /etc/environment
+                ;;
+              "MYSQL_HOST")
+                # MySQL server hostname (can be external cloud database)
+                echo "MYSQL_HOST=${{ secrets.MYSQL_HOST }}" | sudo tee -a /etc/environment
+                ;;
+              "MYSQL_DATABASE")
+                # Duplicate handling - ensures database name is set
+                echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}" | sudo tee -a /etc/environment
+                ;;
+              "MYSQL_USER")
+                # MySQL username with appropriate privileges
+                echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" | sudo tee -a /etc/environment
+                ;;
+              "MYSQL_PASSWORD")
+                # MySQL password - stored securely in GitHub Secrets
+                echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" | sudo tee -a /etc/environment
+                ;;
+              "POSTGRES_HOST")
+                # PostgreSQL server hostname for application services
+                echo "POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}" | sudo tee -a /etc/environment
+                ;;
+              "POSTGRES_DATABASE")
+                # PostgreSQL database name
+                echo "POSTGRES_DATABASE=${{ secrets.POSTGRES_DATABASE }}" | sudo tee -a /etc/environment
+                ;;
+              "POSTGRES_USER")
+                # PostgreSQL username with database access privileges
+                echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" | sudo tee -a /etc/environment
+                ;;
+              "POSTGRES_PASSWORD")
+                # PostgreSQL password - securely stored in GitHub Secrets
+                echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" | sudo tee -a /etc/environment
+                ;;
+              "NEXTCLOUD_ADMIN_USER")
+                # Nextcloud administrator username for initial setup
+                echo "NEXTCLOUD_ADMIN_USER=${{ secrets.NEXTCLOUD_ADMIN_USER }}" | sudo tee -a /etc/environment
+                ;;
+              "NEXTCLOUD_ADMIN_PASSWORD")
+                # Nextcloud administrator password - must be strong
+                echo "NEXTCLOUD_ADMIN_PASSWORD=${{ secrets.NEXTCLOUD_ADMIN_PASSWORD }}" | sudo tee -a /etc/environment
+                ;;
+              "DOMAIN")
+                # Primary domain name for SSL certificates and service access
+                echo "DOMAIN=${{ secrets.DOMAIN }}" | sudo tee -a /etc/environment
+                ;;
+              "AZURE_STORAGE_ACCOUNT_KEY")
+                # Azure Storage account key for backup and file operations
+                echo "AZURE_STORAGE_ACCOUNT_KEY=${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}" | sudo tee -a /etc/environment
+                ;;
+              "AZURE_STORAGE_ACCOUNT_NAME")
+                # Azure Storage account name for backup storage
+                echo "AZURE_STORAGE_ACCOUNT_NAME=${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}" | sudo tee -a /etc/environment
+                ;;
+              "IMG_NAME")
+                # Docker image name with GitHub Container Registry path
+                # Dynamically constructed using repository owner and service name
+                echo "IMG_NAME=ghcr.io/${{ github.repository_owner }}/${{ github.event.client_payload.service }}" | sudo tee -a /etc/environment
+                ;;
+              *)
+                # Log unknown secrets for debugging
+                echo "Unknown secret: ${secret}"
+                ;;
+            esac
+          done
+          
+          # ================================================================
+          # ENVIRONMENT ACTIVATION AND CONFIGURATION PROCESSING
+          # ================================================================
+          # 
+          # Load all environment variables and apply dynamic configuration
+          # updates to deployment files (nginx configurations, etc.)
+          
+          # Export all environment variables for current session
+          for env in $( cat /etc/environment ); do export $(echo $env | sed -e 's/"//g'); done
+          
+          # Update nginx configurations with actual domain name
+          # This allows using template configurations with variable substitution
+          sed -i "s/\$DOMAIN/$DOMAIN/g" /root/docker/web/nginx.conf
+          sed -i "s/\$DOMAIN/$DOMAIN/g" /root/docker/kickstart/web/nginx.conf
+          
+          # ================================================================
+          # DATA DIRECTORY PREPARATION
+          # ================================================================
+          # 
+          # Ensure persistent data directory exists for volume mounts
+          # This directory stores application data, certificates, etc.
+          if [ ! -d "/root/data" ]; then
+            sudo mkdir /root/data
+          fi
+          
+          # ================================================================
+          # SERVICE LIFECYCLE MANAGEMENT
+          # ================================================================
+          # 
+          # Gracefully stop existing services and clean up resources
+          # before deploying new versions.
+          
+          # Stop all running containers gracefully
+          sudo docker stop $(sudo docker ps -a -q)
+          
+          # Remove stopped containers to free resources
+          sudo docker container prune -f
+          
+          # Remove old image version to ensure fresh deployment
+          sudo docker rmi $IMG_NAME
+          
+          # Clean up unused Docker networks
+          sudo docker network prune -f
+          
+          # Kill any processes using HTTP/HTTPS ports (cleanup safety measure)
+          sudo kill -9 $(sudo lsof -t -i :443)
+          sudo kill -9 $(sudo lsof -t -i :80)
+          
+          # Restart Docker service to ensure clean state
+          sudo systemctl stop docker
+          sudo systemctl start docker.service
+          
+          # ================================================================
+          # SSL CERTIFICATE INITIALIZATION
+          # ================================================================
+          # 
+          # Handle SSL certificate setup for new deployments.
+          # If certificates don't exist, run the kickstart process
+          # to obtain initial certificates from Let's Encrypt.
+          if [ ! -d "/root/data/certbot" ]; then
+            cd /root/docker/kickstart
+            # Start minimal nginx and certbot for initial certificate generation
+            sudo docker compose up -d
+            # Wait for certificate generation process to complete
+            sleep 60
+            # Stop kickstart services
+            sudo docker compose down
+            # Clean up kickstart containers
+            sudo docker stop $(sudo docker ps -a -q)
+            sudo docker container prune -f
+          fi
+          
+          # ================================================================
+          # FILE PERMISSIONS MANAGEMENT
+          # ================================================================
+          # 
+          # Ensure proper ownership of Nextcloud data directory.
+          # This is critical for Nextcloud functionality and security.
+          if [ -d "/root/data/nextcloud" ]; then
+            # Set www-data ownership for Apache/PHP processes in container
+            sudo chown -R www-data:www-data /root/data/nextcloud
+          fi
+          
+          # ================================================================
+          # GITHUB CONTAINER REGISTRY AUTHENTICATION
+          # ================================================================
+          # 
+          # Authenticate with GitHub Container Registry to pull private images.
+          # First logout from all existing registries for security.
+          for url in $(sudo cat ~/.docker/config.json | jq -r '.auths | keys | .[]'); do sudo docker logout $url; done
+          
+          # Login to GitHub Container Registry using provided token
+          echo "${{ secrets.GITHUB_TOKEN }}" | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          
+          # ================================================================
+          # SERVICE DEPLOYMENT AND STARTUP
+          # ================================================================
+          # 
+          # Start the main application services using Docker Compose.
+          # This is the final step that brings the new deployment online.
+          cd /root/docker
+          sudo docker compose up -d
