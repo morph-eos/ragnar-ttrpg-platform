@@ -1,0 +1,114 @@
+# ============================================================================
+# KICKSTART CONFIGURATION - Initial SSL Certificate Setup
+# Ragnar TTRPG Platform - Cloud Infrastructure
+# ============================================================================
+# 
+# This Docker Compose configuration is used for the INITIAL SETUP ONLY.
+# It obtains the first SSL certificates from Let's Encrypt before
+# the main production services can be started.
+# 
+# Purpose:
+# - Obtain initial SSL certificates via Let's Encrypt
+# - Bootstrap the certificate directory structure
+# - Verify domain ownership and DNS configuration
+# 
+# Usage:
+# 1. Configure environment variables (.env file)
+# 2. Run: docker-compose -f kickstart/docker-compose.yml up certbot
+# 3. Verify certificates are generated in ../data/certbot/conf/
+# 4. Start main production services with main docker-compose.yml
+# 
+# Author: Stefano Sciacovelli (https://github.com/M04ph3u2)
+# Version: 1.0.0
+# ============================================================================
+
+services:
+
+  # ========================================================================
+  # NGINX - MINIMAL CONFIGURATION FOR ACME CHALLENGES
+  # ========================================================================
+  # 
+  # This nginx instance serves only to handle ACME challenges during
+  # the initial certificate generation process. It does not proxy
+  # to Nextcloud or handle production traffic.
+  nginx:
+    container_name: nginx
+    restart: unless-stopped                  # Restart unless manually stopped
+    image: nginx:1.24.0                     # Same version as production
+    ports:
+      - "80:80"                             # HTTP only - no HTTPS yet
+      - "443:443"                           # Reserve HTTPS port for later
+    volumes:
+      - ./web:/etc/nginx/                   # Minimal nginx configuration
+      - ../../data/certbot/conf:/etc/letsencrypt      # Certificate storage
+      - ../../data/certbot/www:/var/www/certbot       # ACME challenge directory
+
+  # ========================================================================
+  # CERTBOT - INITIAL CERTIFICATE GENERATION
+  # ========================================================================
+  # 
+  # Certbot generates the first SSL certificates using the ACME protocol.
+  # This process requires:
+  # - Domain DNS pointing to this server
+  # - Port 80 accessible from the internet
+  # - Valid email address for Let's Encrypt registration
+  certbot:
+    container_name: certbot
+    image: certbot/certbot:v2.8.0           # Same version as production
+    volumes:
+      - ../../data/certbot/conf:/etc/letsencrypt      # Certificate storage
+      - ../../data/certbot/www:/var/www/certbot       # ACME challenge directory
+    # Certificate generation command optimized for initial setup:
+    # - certonly: Only obtain certificates, don't install
+    # - webroot: Use webroot authentication method (requires nginx)
+    # - rsa-key-size 4096: High security 4096-bit RSA keys
+    # - agree-tos: Automatically agree to Let's Encrypt Terms of Service
+    # - no-eff-email: Don't share email with Electronic Frontier Foundation
+    # - force-renewal: Force renewal even if certificates exist
+    command: certonly --webroot -w /var/www/certbot --email "$CERTBOT_EMAIL" -d "cloud.$DOMAIN" --rsa-key-size 4096 --agree-tos --no-eff-email --force-renewal
+    depends_on:
+      - nginx                               # Ensure nginx is running for ACME challenges
+
+# ============================================================================
+# KICKSTART DEPLOYMENT INSTRUCTIONS
+# ============================================================================
+# 
+# Prerequisites:
+# 1. Domain name with DNS A record pointing to your server's IP
+# 2. Firewall allowing inbound traffic on ports 80 and 443
+# 3. Environment variables configured in .env file
+# 
+# Required Environment Variables:
+# - DOMAIN: Your domain name (e.g., example.com)
+# - CERTBOT_EMAIL: Email address for Let's Encrypt registration
+# 
+# Deployment Steps:
+# 1. Ensure DNS is properly configured:
+#    nslookup cloud.$DOMAIN
+# 
+# 2. Create data directory structure:
+#    mkdir -p ../data/certbot/{conf,www}
+# 
+# 3. Run the kickstart process:
+#    docker-compose -f kickstart/docker-compose.yml up certbot
+# 
+# 4. Verify certificate generation:
+#    ls -la ../data/certbot/conf/live/cloud.$DOMAIN/
+# 
+# 5. Stop kickstart services:
+#    docker-compose -f kickstart/docker-compose.yml down
+# 
+# 6. Start production services:
+#    docker-compose up -d
+# 
+# Troubleshooting:
+# - Check DNS propagation: dig cloud.$DOMAIN
+# - Verify port 80 accessibility: telnet your-server-ip 80
+# - Review certbot logs: docker-compose logs certbot
+# - Test ACME challenge: curl http://cloud.$DOMAIN/.well-known/acme-challenge/
+# 
+# Security Notes:
+# - This configuration is for initial setup only
+# - Do not use in production - use main docker-compose.yml instead
+# - Certificates are valid for 90 days and auto-renew in production
+# - Store backup copies of certificates in secure location
