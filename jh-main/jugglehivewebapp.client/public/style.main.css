@@ -1,0 +1,8 @@
+/* Palette */
+:root {
+    --main-color: #54267e;  /* Purple */
+    --secondary-color: #f9c214; /* Yellow */
+    --background-color: #190b26; /* Dark Purple */
+    --text-color: #ffffff;  /* White */
+    --grey: #1e1e1e;
+}

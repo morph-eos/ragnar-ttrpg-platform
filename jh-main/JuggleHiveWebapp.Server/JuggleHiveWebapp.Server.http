@@ -1,0 +1,6 @@
+@JuggleHiveWebapp.Server_HostAddress = http://localhost:5179
+
+GET {{JuggleHiveWebapp.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
