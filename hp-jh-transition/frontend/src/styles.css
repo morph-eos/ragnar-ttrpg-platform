@@ -1,0 +1,57 @@
+html {
+    background-color: black;
+}
+
+.new-h-screen {
+    height: calc(100vh - 60px);
+}
+
+#navbar {
+    background-color: rgb(255, 165, 0);
+    height: 60px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    border-radius: 40px;
+}
+
+img[alt~="baricon"] {
+    height: 60px;
+}
+
+img[alt~="logo"] {
+    margin-right: 20px;
+    margin-left: -20px;
+}
+
+img[alt~="login"] {
+    margin-right: -20px;
+    margin-left: 20px;
+}
+
+/*---
+spazio Tailwind
+---*/
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definisci la tua palette di colori personalizzata */
+@layer utilities {
+.bg-orange {
+    background-color: orange;
+}
+}
+
+.btn-bullet {
+@apply px-4 py-2 rounded-full font-semibold text-white;
+}
+
+.btn-bullet-active {
+@apply px-4 py-2 rounded-full font-semibold text-black border border-black;
+}
+
+.btn-bullet-orange {
+@apply bg-orange;
+}
