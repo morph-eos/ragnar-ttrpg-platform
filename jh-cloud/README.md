@@ -93,4 +93,4 @@ Data persisted in `../data/nextcloud` (app data) and `../data/certbot` (certific
 
 ---
 
-<sub>Part of the **[Ragnar TTRPG Platform](../README.md)** monorepo — see the root README for the full evolution across all phases.</sub>
+<sub>Part of the **[Ragnar TTRPG Platform](https://github.com/morph-eos/ragnar-ttrpg-platform)** monorepo — see the root README for the full evolution across all phases.</sub>

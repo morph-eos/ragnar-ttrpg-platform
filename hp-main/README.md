@@ -14,14 +14,12 @@
 
 The original MERN stack implementation of the Ragnar TTRPG Platform, developed by **HeatPeak Studio**. This is the foundational phase of the platform, featuring document-based data modeling, AI-generated reference images, and a browser-based character/rules showcase.
 
-**[Live Demo](https://ragnar-legacy.onrender.com/rpg/)** — Initial loading may take 30-60 seconds (free hosting tier).
-
 > **Repository note — what you're looking at.** This directory surfaces the
 > **original MERN prototype** that HeatPeak Studio built first. The `hp-main`
 > branch's own commit history *also* contains the studio's later experiment
 > with a Spring Boot + Angular rewrite, which was eventually archived; that
 > transition is presented, fully assembled, in
-> [`../hp-jh-transition/`](../hp-jh-transition/). So if `git log` here surfaces
+> [the `hp-jh-transition` folder](https://github.com/morph-eos/ragnar-ttrpg-platform/tree/main/hp-jh-transition). So if `git log` here surfaces
 > Java or Angular commits, that is the same HeatPeak repository's history —
 > this folder deliberately presents the MERN codebase that came first.
 
@@ -94,4 +92,4 @@ cd frontend && npm install && npm run dev
 
 ---
 
-<sub>Part of the **[Ragnar TTRPG Platform](../README.md)** monorepo — see the root README for the full evolution across all phases.</sub>
+<sub>Part of the **[Ragnar TTRPG Platform](https://github.com/morph-eos/ragnar-ttrpg-platform)** monorepo — see the root README for the full evolution across all phases.</sub>

@@ -31,8 +31,11 @@ Key capabilities:
 - Azure File Storage integration with SAS-based asset access (`AzureFileService`)
 - RESTful API with 23 controllers, 22 models, 22 service interfaces
 
-> No end-user authentication is implemented in this codebase; the `User`
-> entity and controller exist, but login/identity was not built.
+> Development on this build ceased before authentication and production
+> hardening — it is the furthest-developed phase of a zero-budget project
+> that ran out of time and funding. No end-user authentication is
+> implemented; the `User` entity and controller exist, but login/identity
+> was not built.
 
 ## Project Structure
 
@@ -112,4 +115,4 @@ docker run -p 80:8080 ragnar-ttrpg-platform
 
 ---
 
-<sub>Part of the **[Ragnar TTRPG Platform](../README.md)** monorepo — see the root README for the full evolution across all phases.</sub>
+<sub>Part of the **[Ragnar TTRPG Platform](https://github.com/morph-eos/ragnar-ttrpg-platform)** monorepo — see the root README for the full evolution across all phases.</sub>

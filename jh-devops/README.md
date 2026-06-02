@@ -94,4 +94,4 @@ Installs: Docker + Compose, Azure CLI, PostgreSQL 16 client, Azure File Storage 
 
 ---
 
-<sub>Part of the **[Ragnar TTRPG Platform](../README.md)** monorepo — see the root README for the full evolution across all phases.</sub>
+<sub>Part of the **[Ragnar TTRPG Platform](https://github.com/morph-eos/ragnar-ttrpg-platform)** monorepo — see the root README for the full evolution across all phases.</sub>

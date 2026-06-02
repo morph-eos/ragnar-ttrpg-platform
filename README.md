@@ -14,7 +14,17 @@ This is a **unified portfolio monorepo** that gathers the complete evolution of 
 
 Rather than living in five separate repositories, every implementation is preserved here as a subdirectory **with its full, original commit history merged into `main`** (via subtree merges). The five source branches also remain available unchanged for reference. In other words: `git log -- jh-main/` walks the modern app's real, full commit history (back to its first commit), not a single squashed import.
 
-> **Status:** archived. The platform is no longer under active development; it is published as an engineering portfolio.
+> **Status:** archived and intentionally incomplete — published as a *learning-driven* portfolio piece, not a shipped product.
+
+### Why three rewrites?
+
+This was a **zero-budget, deliberately over-ambitious** project, and the rebuilds reflect that rather than hide it:
+
+- the **legacy** MERN build (`hp-main`) was a rough first attempt that didn't hold up;
+- the **transition** to Spring Boot + Angular (`hp-jh-transition`) was abandoned mid-migration once a better-fitting stack (.NET) became clear;
+- the **modern** .NET 8 + Angular 18 build (`jh-main`) is the furthest-developed, but ran out of time and funding before authentication and production hardening.
+
+It is published as evidence of technical range, architectural decision-making, and DevOps breadth across a full rebuild cycle — not as a finished product. For projects taken end-to-end, see my [other repositories](https://github.com/morph-eos?tab=repositories).
 
 ## Evolution
 
