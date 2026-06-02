@@ -18,7 +18,7 @@
 # 3. Verify certificates are generated in ../data/certbot/conf/
 # 4. Start main production services with main docker-compose.yml
 # 
-# Author: Stefano Sciacovelli (https://github.com/M04ph3u2)
+# Author: Stefano Sciacovelli (https://github.com/morph-eos)
 # Version: 1.0.0
 # ============================================================================
 
