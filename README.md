@@ -61,7 +61,15 @@ Supporting infrastructure:
 └── README.md
 ```
 
-Each subdirectory contains a complete sub-project with its own README.
+Each subdirectory contains a complete sub-project with its own README. Click a folder to browse it inline on `main`, or jump to the matching original branch (flat layout):
+
+| Implementation | Folder on `main` | Original branch |
+|----------------|------------------|-----------------|
+| Legacy — MERN | [`hp-main/`](hp-main/) | [`hp-main` ↗](https://github.com/morph-eos/ragnar-ttrpg-platform/tree/hp-main) |
+| Transition — Spring + Angular | [`hp-jh-transition/`](hp-jh-transition/) | [`hp-jh-transition` ↗](https://github.com/morph-eos/ragnar-ttrpg-platform/tree/hp-jh-transition) |
+| Modern — .NET 8 + Angular 18 | [`jh-main/`](jh-main/) | [`jh-main` ↗](https://github.com/morph-eos/ragnar-ttrpg-platform/tree/jh-main) |
+| DevOps — CI/CD + Azure | [`jh-devops/`](jh-devops/) | [`jh-devops` ↗](https://github.com/morph-eos/ragnar-ttrpg-platform/tree/jh-devops) |
+| Cloud — Nextcloud | [`jh-cloud/`](jh-cloud/) | [`jh-cloud` ↗](https://github.com/morph-eos/ragnar-ttrpg-platform/tree/jh-cloud) |
 
 ## Exploring the History
 
